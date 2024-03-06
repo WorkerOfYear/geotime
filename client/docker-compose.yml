@@ -1,0 +1,13 @@
+version: '3.10'
+
+services:
+  web:
+    container_name: geotime-front
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - /app/node_modules
+      - .:/app

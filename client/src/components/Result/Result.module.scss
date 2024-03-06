@@ -1,0 +1,72 @@
+@import "sass-rem";
+
+.result {
+  padding-top: rem(25px);
+  border-top: rem(1px) solid #E3E3E3;
+  margin-bottom: rem(149px);
+
+  &__row {
+    display: flex;
+
+  }
+
+  &__text {
+    flex: 0 0 rem(452px);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: #000;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.32px;
+  }
+}
+
+
+.result {
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4px);
+    // overflow-y: auto;
+  }
+
+  &__content {
+    display: flex;
+    justify-content: space-between;
+    gap: rem(10px);
+  }
+}
+
+.bodyRow {
+  max-width: rem(760px);
+  margin-left: auto;
+  display: grid;
+  grid-template-columns: rem(165px) rem(93px) rem(93px) rem(80px) rem(80px) rem(80px) rem(80px) rem(80px);
+  gap: rem(4px);
+
+}
+
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--secondary);
+  color: #212121;
+  border-radius: rem(4px);
+  line-height: 1.5em;
+  height: rem(40px);
+  overflow: hidden;
+
+  &:nth-child(3),
+  &:nth-child(7) {
+    border: 1px solid #AAA;
+  }
+
+  &:last-child {
+    background-color: var(--primary);
+    color: #fff;
+  }
+}

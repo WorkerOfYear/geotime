@@ -1,0 +1,51 @@
+@import "sass-rem";
+
+.list {
+  max-width: rem(572px);
+  text-align: left;
+
+  &__label {
+    margin-bottom: rem(4px);
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    padding: rem(4px 10px);
+    background-color: var(--secondary);
+    margin-bottom: rem(22px);
+
+    ul {
+      border-right: rem(1px) solid #D9D9D9;
+      margin-right: rem(13px);
+      height: rem(319px);
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        width: rem(4px); /* ширина всей полосы прокрутки */
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent; /* цвет зоны отслеживания */
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #D9D9D9; /* цвет бегунка */
+      }
+    }
+  }
+
+  &__bottom {
+    justify-content: flex-end;
+    margin-right: rem(-19px);
+    display: flex;
+    align-items: center;
+    gap: rem(10px);
+  }
+}
+
+.item {
+  color: var(--dark);
+  font-family: TruthCYR;
+  line-height: 1.5em;
+}

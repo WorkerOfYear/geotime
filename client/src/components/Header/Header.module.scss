@@ -1,0 +1,83 @@
+@import "sass-rem";
+
+.header {
+  padding: 1rem 0;
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__col {
+    display: flex;
+    align-items: center;
+    gap: rem(50px);
+  }
+
+  &__block {
+    display: flex;
+    flex-direction: column;
+    gap: rem(10px);
+  }
+
+  &__btns {
+    display: flex;
+    gap: rem(30px);
+  }
+
+  &__links {
+    display: flex;
+    gap: rem(6px);
+    align-items: center;
+  }
+}
+
+.block {
+  display: inline-flex;
+  gap: rem(10px);
+  align-items: center;
+
+  &__name {
+    min-width: rem(118px);
+    padding: rem(8px 16px);
+    height: rem(33px);
+    color: #212121;
+    font-size: rem(14px);
+    border-radius: rem(4px);
+    background-color: #eaf2ff;
+  }
+
+  &__btn {
+    width: rem(32px);
+    height: rem(32px);
+    flex: 0 0 rem(32px);
+    padding: rem(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: rem(4px);
+    background: var(--primary);
+    color: #fff;
+  }
+}
+
+.blockDisable {
+  .block {
+    &__name,
+    &__btn {
+      pointer-events: none;
+      color: #8594AE;
+      background-color: #CDD6E5;
+    }
+  }
+}
+
+.blockAccent {
+  .block {
+    &__name {
+      background-color: var(--primary);
+      color: #fff;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+@import "sass-rem";
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: rem(4px);
+  align-items: flex-start;
+
+  &__label {
+
+    color: #AAA;
+    font-size: rem(12px);
+    line-height: 133.333%; /* 133.333% */
+  }
+
+  &__input {
+    width: 100%;
+    border-radius: rem(4px);
+    background: var(--secondary);
+    padding: rem(4px 10px);
+    color: var(--dark);
+    line-height: 1.5em;
+
+  }
+
+}

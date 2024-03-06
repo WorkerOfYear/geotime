@@ -1,0 +1,19 @@
+DB_HOST=mypostgres
+DB_PORT=5432
+DB_PASSWORD=admin
+DB_LOGIN=admin
+DB_NAME=postgres
+
+REDIS_HOST=redis_server
+REDIS_PORT=6379
+
+RABBIT_HOST=rabbitmq
+HOST = "94.41.125.130"
+PORT = 12001
+
+value_keys = {
+    "0108": "Depth",
+    "1108": "LagDepth",
+    "0844": "WellDiam",
+}
+http://47.51.131.147/-wvhttp-01-/GetOneShot?image_size=1280x720&frame_count=1000000000

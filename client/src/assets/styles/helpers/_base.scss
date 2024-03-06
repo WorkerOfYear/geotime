@@ -1,0 +1,34 @@
+@font-face {
+  font-family: 'TruthCYR';
+  src: url('./../src/assets/fonts/TruthCYR-Regular.woff') format('woff2'),
+    url('./../src/assets/fonts/TruthCYR-Regular.woff') format('woff');
+    
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TruthCYR';
+  src: url('../src/assets/fonts/TruthCYR-Medium.woff') format('woff2'),
+    url('../src/assets/fonts/TruthCYR-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+button {
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+
+body {
+  font-family: 'TruthCYR', sans-serif;
+}
+
+.container {
+  max-width: rem(1300px);
+  margin: 0 auto;
+  padding: 0 rem(15px);
+}

@@ -1,0 +1,353 @@
+@import "sass-rem";
+
+.button {
+  background-color: var(--secondary);
+  padding: rem(8px 16px);
+  color: var(--dark);
+  font-size: rem(14px);
+  border-radius: rem(4px);
+  border: rem(2px) solid var(--secondary);
+}
+
+.label {
+  color: #aaa;
+  font-size: rem(12px);
+  line-height: 1.333em;
+}
+
+.button--accent {
+  background-color: var(--primary);
+  padding: rem(8px 16px);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.button--border {
+  background-color: #fff;
+  border-color: var(--primary);
+  padding: rem(8px 16px);
+  color: var(--primary);
+}
+
+.button--border:hover {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+.home {
+  &__table {
+    height: auto;
+    overflow-y: auto;
+    padding-right: rem(40px);
+    margin-right: rem(-40px);
+    border-right: rem(1px) solid #E3E3E3;
+
+    &::-webkit-scrollbar {
+      width: rem(4px);
+      /* ширина всей полосы прокрутки */
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+      /* цвет зоны отслеживания */
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #D9D9D9;
+      /* цвет бегунка */
+    }
+  }
+}
+
+.history {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+
+  &__wrapper {
+    max-width: rem(759px);
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-end;
+    gap: rem(20px);
+    justify-content: flex-start;
+    padding: rem(30px) 0;
+  }
+
+  &__link {
+    position: absolute;
+    right: 0;
+    top: rem(32px);
+  }
+
+  &__body {
+    height: rem(718px);
+    overflow-y: auto;
+    width: 100%;
+    border-right: rem(1px) solid #D9D9D9;
+
+    &::-webkit-scrollbar {
+      width: rem(4px);
+      /* ширина всей полосы прокрутки */
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+      /* цвет зоны отслеживания */
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #D9D9D9;
+      /* цвет бегунка */
+    }
+  }
+
+  &__table-head,
+  &__table-body {
+    margin: 0 auto !important;
+  }
+
+  &__table-body {
+    padding-top: rem(15px);
+    height: auto !important;
+    border-right: none !important;
+    max-width: 47.5rem;
+  }
+
+  &__btn {
+    padding: rem(8px 24px);
+    border-radius: rem(4px);
+    border: rem(2px) solid var(--primary);
+    background: #FFF;
+    color: var(--primary);
+    text-transform: uppercase;
+    font-size: rem(14px);
+    font-weight: 500;
+  }
+}
+
+.settings {
+  padding-top: rem(81px);
+
+  &__header {
+    display: flex;
+    align-items: flex-end;
+    gap: rem(20px);
+
+    ::placeholder {
+      color: #818589;
+    }
+  }
+
+  &__sub-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+  }
+
+  &__list {
+    position: relative;
+  }
+
+  &__link {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+  }
+}
+
+.sub-item {
+  display: inline-flex;
+  align-items: center;
+  gap: rem(10px);
+
+  &__input {
+    max-width: rem(80px);
+  }
+
+  ::placeholder {
+    color: var(--gray)
+  }
+}
+
+.product {
+  ::placeholder {
+    color: #818589;
+  }
+  
+  &__videowrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__video {
+    background-size: contain;
+    background-position: left top;
+    background-repeat: no-repeat;
+    width: rem(483px);
+    height: rem(253px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
+
+  &__url {
+    margin-top: 2rem;
+    margin-left: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: end;
+    gap: 1rem;
+
+    input {
+      width: 430px;
+    }
+  }
+
+  &__info-wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: rem(20px) rem(30px);
+
+  }
+
+  &__bottom {
+    text-align: right;
+    padding-top: rem(43px);
+  }
+
+  &__info-details {
+    display: flex;
+    align-items: center;
+    gap: rem(20px);
+    color: #010101;
+    line-height: 1;
+
+    input {
+      border: none !important;
+    }
+  }
+
+  &__header {
+    padding: rem(43px) 0 rem(38px);
+    position: relative;
+    display: flex;
+    gap: rem(30px);
+  }
+
+  &__link {
+    position: absolute;
+    right: 0;
+    top: rem(62px);
+  }
+
+
+  &__body {
+    display: flex;
+    gap: rem(63px);
+    justify-content: space-between;
+  }
+
+  &__col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__info {
+    display: inline-flex;
+    align-items: center;
+    gap: rem(10px);
+    line-height: 1.5em;
+
+    span {
+      display: inline-block;
+      min-width: rem(175px);
+      text-align: left;
+    }
+
+    input {
+      border: 1px solid #AAA;
+      max-width: rem(110px);
+    }
+  }
+
+  &__info--bg {
+    align-items: flex-start;
+
+  }
+}
+
+.AlertDialogOverlay {
+  background-color: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  inset: 0;
+  animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.AlertDialogContent {
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -75%);
+  width: 90vw;
+  max-width: 400px;
+  max-height: 85vh;
+  padding: 25px;
+  animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.AlertDialogContent:focus {
+  outline: none;
+}
+
+.AlertDialogTitle {
+  margin-bottom: 30px;
+  color: var(--mauve-12);
+  font-size: 17px;
+  font-weight: 500;
+}
+
+ul.react-paginate {
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  list-style-type: none;
+  padding: 0 5rem;
+}
+
+ul.react-paginate li a {
+  border-radius: 7px;
+  padding: 0.1rem 1rem;
+  border: gray 1px solid;
+  cursor: pointer;
+}
+ul.react-paginate li.previous a,
+ul.react-paginate li.next a,
+ul.react-paginate li.break a {
+  border-color: transparent;
+}
+ul.react-paginate li.selected a {
+  background-color: #605dec;
+  border-color: transparent;
+  color: white;
+  min-width: 32px;
+}
+ul.react-paginate li.disabled a {
+  color: grey;
+}
+ul.react-paginate li.disable,
+ul.react-paginate li.disabled a {
+  cursor: default;
+}

@@ -1,0 +1,18 @@
+@import "sass-rem";
+
+.btn {
+  border-radius: rem(4px);
+  background-color: var(--primary);
+  padding: rem(18px) rem(30px);
+  color: #fff;
+  font-size: rem(20px);
+  font-weight: 500;
+  line-height: 1.2em;
+  border: rem(2px) solid var(--primary);
+  
+  &:disabled {
+    background-color: #CDD6E5;
+    color: #8594AE;
+    border-color: #8594AE;
+  }
+}

@@ -1,0 +1,9 @@
+@import "sass-rem";
+
+.link {
+  font-size: rem(14px);
+  padding: rem(8px 16px);
+  background-color: var(--secondary);
+  border-radius: rem(4px);
+  color: var(--dark);
+}

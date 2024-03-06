@@ -1,0 +1,69 @@
+@import "sass-rem";
+
+.table {
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4px);
+    height: rem(242px);
+    overflow-y: auto;
+    border-right: rem(1px) solid #E3E3E3;
+    padding-right: rem(30px);
+    margin-right: rem(-30px);
+    overflow-x: hidden;
+
+    &::-webkit-scrollbar {
+      width: rem(4px); /* ширина всей полосы прокрутки */
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent; /* цвет зоны отслеживания */
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #D9D9D9; /* цвет бегунка */
+    }
+  }
+
+  &__content {
+    border-top: rem(1px) solid #E3E3E3;
+    display: flex;
+    justify-content: space-between;
+    gap: rem(10px);
+    padding: rem(6px) 0;
+  }
+}
+
+.bodyRow {
+  max-width: rem(760px);
+  margin-left: auto;
+  display: grid;
+  grid-template-columns: rem(145px) rem(93px) rem(93px) rem(80px) rem(80px) rem(80px) rem(80px) rem(80px);
+  gap: rem(4px);
+
+}
+
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--secondary);
+  color: #212121;
+  border-radius: rem(4px);
+  line-height: 1.2em;
+  height: rem(40px);
+  overflow: hidden;
+  font-size: 0.9em;
+
+  &:nth-child(3),
+  &:nth-child(7) {
+    border: 1px solid #AAA;
+  }
+
+  &:last-child {
+    background-color: var(--primary);
+    color: #fff;
+  }
+}
