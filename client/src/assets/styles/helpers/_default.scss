@@ -236,18 +236,26 @@
   }
 
   &__header {
-    padding: rem(43px) 0 rem(38px);
+    padding: rem(43px) 0 rem(48px);
     position: relative;
+    display: flex;
+    gap: rem(30px);
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__header div {
     display: flex;
     gap: rem(30px);
   }
 
   &__link {
-    position: absolute;
-    right: 0;
-    top: rem(62px);
+    text-decoration: none;
   }
 
+  &__link:hover {
+    color: #605dec;
+  }
 
   &__body {
     display: flex;

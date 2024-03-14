@@ -12,6 +12,7 @@ import { ICamera, IInitialCameras } from "../types/ICamera";
 import { cameraSlice } from "../store/reducers/CameraSlice";
 import { getCameraData, setCamera } from "../store/reducers/actions/ActionCreators";
 import { jobSlice } from "../store/reducers/JobSlice";
+import CalibrateButtons from "../components/Buttons/CalibrateButtons/CalibrateButtons";
 
 function chooseCamera(id: string | undefined, reducer: IInitialCameras) {
   if (id === "1") {
@@ -74,7 +75,7 @@ const ProductPage = () => {
           dispatch(getCameraData(id)).then((data) => {
             if (data) {
               dispatch(productObject.action.setCamera(data));
-              dispatch(productObject.action.setCameraId(id))
+              dispatch(productObject.action.setCameraId(id));
               setCameraUrl(data.data.url);
               setCameraUrlInput(data.data.url);
             }
@@ -104,8 +105,8 @@ const ProductPage = () => {
       dispatch(setCamera(newCamera)).then((data) => {
         if (data?.id) {
           localStorage.setItem(productObject.name, data.id);
-          dispatch(productObject.action.setCamera({...newCamera, id: data.id}));
-          dispatch(productObject.action.setCameraId(data.id))
+          dispatch(productObject.action.setCamera({ ...newCamera, id: data.id }));
+          dispatch(productObject.action.setCameraId(data.id));
           console.log(`${productObject.name} with id: ${data.id} set`);
         }
       });
@@ -118,17 +119,20 @@ const ProductPage = () => {
   return (
     <div className={"product"}>
       <div className="product__header">
-        <JobProductButtons onClickStart={() => setShowVideo(true)} onClickStop={() => setShowVideo(false)}/>
-        <Link className="product__link button" to="/">
-          На главную
-        </Link>
+        <div>
+          <JobProductButtons
+            onClickStart={() => setShowVideo(true)}
+            onClickStop={() => setShowVideo(false)}
+          />
+        </div>
+        <div>
+          <CalibrateButtons/>
+        </div>
+        <Link className="product__link" to="/">На главную</Link>
       </div>
       <div className="product__body">
         <div className="product__videowrapper">
-          <div
-            className="product__video"
-            style={{ backgroundImage: '/graph.png' }}
-          >
+          <div className="product__video" style={{ backgroundImage: "/graph.png" }}>
             <Video
               className={"product-video"}
               errorText={productObject?.errorText}
@@ -138,11 +142,7 @@ const ProductPage = () => {
           </div>
           <div className="product__url">
             <span>Введите rtsp url камеры</span>
-            <Item
-              value={cameraUrlInput}
-              onChange={handleUrlOnChange}
-              placeholder={"rtsp://host:port/path"}
-            />
+            <Item value={cameraUrlInput} onChange={handleUrlOnChange} placeholder={"rtsp://host:port/path"} />
           </div>
         </div>
         <div className="product__col">
@@ -196,9 +196,7 @@ const ProductPage = () => {
               <AlertDialog.Title className="AlertDialogTitle">
                 Сохранено! Перейти на главную страницу?
               </AlertDialog.Title>
-              <div
-                style={{ display: "flex", gap: 25, justifyContent: "flex-end" }}
-              >
+              <div style={{ display: "flex", gap: 25, justifyContent: "flex-end" }}>
                 <AlertDialog.Cancel asChild>
                   <button className="button">Остаться</button>
                 </AlertDialog.Cancel>
