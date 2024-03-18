@@ -6,7 +6,6 @@ import styles from "./Table.module.scss";
 import Video from "../Video";
 import { IReport } from "../../types/IReport";
 
-
 const override: CSSProperties = {
   marginTop: "5em",
 };
@@ -20,31 +19,25 @@ type TablesProps = {
   isFetching?: boolean;
 };
 
-const Tables: React.FC<TablesProps> = ({
-  id,
-  reports,
-  cameraUrl,
-  showStream,
-  classBody,
-  isFetching,
-}) => {
-
-  let errorText
+const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, classBody, isFetching }) => {
+  let errorText;
   if (id === 1) {
-    errorText = "Видео с вибросито 1"
+    errorText = "Видео с вибросито 1";
   } else if (id === 2) {
-    errorText = "Видео с вибросито 2"
+    errorText = "Видео с вибросито 2";
   } else if (id === 3) {
-    errorText = "Видео с вибросито 3"
+    errorText = "Видео с вибросито 3";
   }
 
   return (
     <div className={styles.table}>
       <div className={styles.table__content}>
-        {showStream && <div className={styles.table__video}>
-          <Video errorText={errorText} cameraUrl={cameraUrl} showVideo={showStream} />
-        </div>}
-        {isFetching && 
+        {showStream && (
+          <div className={styles.table__video}>
+            <Video errorText={errorText} cameraUrl={cameraUrl} showVideo={showStream} />
+          </div>
+        )}
+        {isFetching && (
           <ClipLoader
             color={"#605dec"}
             loading={true}
@@ -52,7 +45,8 @@ const Tables: React.FC<TablesProps> = ({
             cssOverride={override}
             aria-label="Loading Spinner"
             data-testid="loader"
-            />}
+          />
+        )}
         <div className={clsx(classBody, styles.table__body)}>
           {reports?.map((item: IReport, index: number) => (
             <div className={styles.bodyRow} key={index}>

@@ -2,17 +2,22 @@
 
 .btn {
   border-radius: rem(4px);
-  background-color: var(--primary);
   padding: rem(15px) rem(26px);
-  color: #fff;
+  color: var(--primary);
   font-size: rem(17px);
   font-weight: 500;
   line-height: 1.1em;
   border: rem(2px) solid var(--primary);
-  
+  transition: background-color 0.3s ease;
+
   &:disabled {
-    background-color: #CDD6E5;
-    color: #8594AE;
-    border-color: #8594AE;
+    background-color: #cdd6e5;
+    color: #8594ae;
+    border-color: #8594ae;
+  }
+
+  &:hover {
+    background-color: var(--primary);
+    color: white;
   }
 }
