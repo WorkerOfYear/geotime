@@ -31,4 +31,6 @@ body {
   max-width: rem(1300px);
   margin: 0 auto;
   padding: 0 rem(15px);
+  display: flex;
+  justify-content: center;
 }

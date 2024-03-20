@@ -1,7 +1,6 @@
 @import "sass-rem";
 
 .table {
-
   &__body {
     display: flex;
     flex-direction: column;
@@ -32,6 +31,11 @@
     justify-content: space-between;
     gap: rem(10px);
     padding: rem(6px) 0;
+  }
+
+  &__video {
+    display: flex;
+    gap: 10px;
   }
 }
 

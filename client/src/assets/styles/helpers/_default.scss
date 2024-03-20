@@ -41,6 +41,7 @@
     padding-right: rem(40px);
     margin-right: rem(-40px);
     border-right: rem(1px) solid #E3E3E3;
+    width: 1750px;
 
     &::-webkit-scrollbar {
       width: rem(4px);
@@ -180,6 +181,13 @@
   ::placeholder {
     color: #818589;
   }
+
+  &__title {
+    display: flex;
+    margin-top: rem(30px);
+    justify-content: start;
+    font-size: rem(20px);
+  }
   
   &__videowrapper {
     display: flex;
@@ -194,12 +202,11 @@
     height: rem(253px);
     display: flex;
     align-items: flex-start;
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 
   &__url {
-    margin-top: 2rem;
-    margin-left: 2rem;
+    margin-bottom: 2rem;
     display: flex;
     flex-direction: column;
     align-items: start;
@@ -207,20 +214,24 @@
     gap: 1rem;
 
     input {
-      width: 430px;
+      width: 340px;
+      margin-right: 20px;
     }
   }
 
   &__info-wrapper {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     gap: rem(20px) rem(30px);
 
   }
 
   &__bottom {
-    text-align: right;
     padding-top: rem(43px);
+    display: flex;
+    gap: rem(20px);
+    justify-content: end;
+    align-items: center;
   }
 
   &__info-details {
@@ -236,7 +247,7 @@
   }
 
   &__header {
-    padding: rem(43px) 0 rem(48px);
+    padding: rem(33px) 0 rem(38px);
     position: relative;
     display: flex;
     gap: rem(30px);
@@ -259,8 +270,8 @@
 
   &__body {
     display: flex;
-    gap: rem(63px);
-    justify-content: space-between;
+    gap: rem(153px);
+    justify-content: start;
   }
 
   &__col {

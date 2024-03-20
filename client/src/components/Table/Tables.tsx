@@ -35,8 +35,10 @@ const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, cla
         {showStream && (
           <div className={styles.table__video}>
             <Video errorText={errorText} cameraUrl={cameraUrl} showVideo={showStream} />
+            <Video errorText={errorText} cameraUrl={cameraUrl} showVideo={showStream} />
           </div>
         )}
+        
         {isFetching && (
           <ClipLoader
             color={"#605dec"}

@@ -13,12 +13,13 @@ import { cameraSlice } from "../store/reducers/CameraSlice";
 import { getCameraData, setCamera } from "../store/reducers/actions/ActionCreators";
 import { jobSlice } from "../store/reducers/JobSlice";
 import CalibrateButtons from "../components/Buttons/CalibrateButtons/CalibrateButtons";
+import graph from "./../assets/images/graph.png";
 
 function chooseCamera(id: string | undefined, reducer: IInitialCameras) {
   if (id === "1") {
     return {
       name: "camera1",
-      errorText: "Видео с вибросито 1",
+      errorText: "Видео с камеры 1",
       action: {
         setCamera: cameraSlice.actions.setCamera1,
         setCameraId: jobSlice.actions.setCamera1Id,
@@ -28,7 +29,7 @@ function chooseCamera(id: string | undefined, reducer: IInitialCameras) {
   } else if (id === "2") {
     return {
       name: "camera2",
-      errorText: "Видео с вибросито 2",
+      errorText: "Видео с камеры 2",
       action: {
         setCamera: cameraSlice.actions.setCamera2,
         setCameraId: jobSlice.actions.setCamera2Id,
@@ -38,7 +39,7 @@ function chooseCamera(id: string | undefined, reducer: IInitialCameras) {
   } else if (id === "3") {
     return {
       name: "camera3",
-      errorText: "Видео с вибросито 3",
+      errorText: "Видео с камеры 3",
       action: {
         setCamera: cameraSlice.actions.setCamera3,
         setCameraId: jobSlice.actions.setCamera3Id,
@@ -118,21 +119,32 @@ const ProductPage = () => {
 
   return (
     <div className={"product"}>
+      <div className="product__title">{`Окно калибровки камеры №${sieveId}`}</div>
       <div className="product__header">
-        <div>
+        {/* <div>
           <JobProductButtons
             onClickStart={() => setShowVideo(true)}
             onClickStop={() => setShowVideo(false)}
           />
-        </div>
+        </div> */}
         <div>
-          <CalibrateButtons/>
+          <CalibrateButtons />
         </div>
-        <Link className="product__link" to="/">На главную</Link>
       </div>
       <div className="product__body">
         <div className="product__videowrapper">
-          <div className="product__video" style={{ backgroundImage: "/graph.png" }}>
+          <div className="product__url">
+            <span>Введите url камеры</span>
+            <div style={{ display: "flex" }}>
+              <Item
+                value={cameraUrlInput}
+                onChange={handleUrlOnChange}
+                placeholder={"rtsp://host:port/path"}
+              />
+              <button className="button button--border">Применить</button>
+            </div>
+          </div>
+          <div className="product__video" style={{ backgroundImage: graph }}>
             <Video
               className={"product-video"}
               errorText={productObject?.errorText}
@@ -140,9 +152,13 @@ const ProductPage = () => {
               showVideo={showVideo}
             />
           </div>
-          <div className="product__url">
-            <span>Введите rtsp url камеры</span>
-            <Item value={cameraUrlInput} onChange={handleUrlOnChange} placeholder={"rtsp://host:port/path"} />
+          <div className="product__video" style={{ backgroundImage: graph }}>
+            <Video
+              className={"product-video"}
+              errorText="Видео с детекцией"
+              cameraUrl=""
+              showVideo={showVideo}
+            />
           </div>
         </div>
         <div className="product__col">
@@ -165,11 +181,6 @@ const ProductPage = () => {
                 <Item placeholder={"0"} label={"Координата Y"} />
               </div>
               <div className="product__info-details">
-                D
-                <Item placeholder={"0"} label={"Координата Х"} />
-                <Item placeholder={"0"} label={"Координата Y"} />
-              </div>
-              <div className="product__info-details">
                 B
                 <Item placeholder={"0"} label={"Координата Х"} />
                 <Item placeholder={"0"} label={"Координата Y"} />
@@ -179,11 +190,19 @@ const ProductPage = () => {
                 <Item placeholder={"0"} label={"Координата Х"} />
                 <Item placeholder={"0"} label={"Координата Y"} />
               </div>
+              <div className="product__info-details">
+                D
+                <Item placeholder={"0"} label={"Координата Х"} />
+                <Item placeholder={"0"} label={"Координата Y"} />
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div className="product__bottom">
+        <Link className="product__link" to="/">
+          На главную
+        </Link>
         <AlertDialog.Root>
           <AlertDialog.Trigger asChild>
             <button className="button button--border" onClick={handleSubmitBtn}>
