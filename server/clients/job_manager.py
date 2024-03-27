@@ -40,31 +40,30 @@ class JobManager:
     def create_jobs(cameras: list[dict]) -> List:
         jobs = []
         for camera in cameras:
-            match camera['number']:
-                case '1':
-                    content = {
-                        'id': 'camera1',
-                        'camera_id': camera['camera_id'],
-                        'status': camera['status']
-                    }
-                    RedisManager().add_data('job', 'add', content)
-                    jobs.append(content)
-                case '2':
-                    content = {
-                        'id': 'camera2',
-                        'camera_id': camera['camera_id'],
-                        'status': camera['status']
-                    }
-                    RedisManager().add_data('job', 'add', content)
-                    jobs.append(content)
-                case '3':
-                    content = {
-                        'id': 'camera3',
-                        'camera_id': camera['camera_id'],
-                        'status': camera['status']
-                    }
-                    RedisManager().add_data('job', 'add', content)
-                    jobs.append(content)
+            if camera['number'] == '1':
+                content = {
+                    'id': 'camera1',
+                    'camera_id': camera['camera_id'],
+                    'status': camera['status']
+                }
+                RedisManager().add_data('job', 'add', content)
+                jobs.append(content)
+            if camera['number'] == '2':
+                content = {
+                    'id': 'camera2',
+                    'camera_id': camera['camera_id'],
+                    'status': camera['status']
+                }
+                RedisManager().add_data('job', 'add', content)
+                jobs.append(content)
+            if camera['number'] == '3':
+                content = {
+                    'id': 'camera3',
+                    'camera_id': camera['camera_id'],
+                    'status': camera['status']
+                }
+                RedisManager().add_data('job', 'add', content)
+                jobs.append(content)
         return jobs
 
     @staticmethod

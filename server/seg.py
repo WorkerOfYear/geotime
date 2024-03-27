@@ -4,7 +4,6 @@ import json
 import time
 import numpy as np
 from cv2 import cuda
-import matplotlib.pyplot as plt
 from typing import List, Dict, Any
 
 from loguru import logger
@@ -173,55 +172,57 @@ def process_stream(fps, frames, min_flow_magnitude, lk_params, prev_points, mask
     }
 
 
-class ModelManager:
-    def process_video(self, stream_url, job_id):
-        max_retries = 99
-        retries = 0
+def process_video(stream_url, job_id):
+    max_retries = 99
+    retries = 0
 
-        fps_counter = 0
-        area_cm2_list = []
-        v_liters = []
-        while retries < max_retries:
-            try:
-                cap = cv2.VideoCapture(stream_url)
-                fps = int(cap.get(cv2.CAP_PROP_FPS))
+    fps_counter = 0
+    area_cm2_list = []
+    v_liters = []
+    while retries < max_retries:
+        try:
+            cap = cv2.VideoCapture(stream_url)
+            fps = int(cap.get(cv2.CAP_PROP_FPS))
 
-                # ret, first_frame = cap.read()
-                first_frame = cv2.imread('img.png')
-                # cv2.imwrite('img.png', first_frame)
-                min_flow_magnitude = 2.0
+            # ret, first_frame = cap.read()
+            first_frame = cv2.imread('img.png')
+            # cv2.imwrite('img.png', first_frame)
+            min_flow_magnitude = 2.0
 
-                lk_params = dict(
-                    winSize=(10, 10),
-                    maxLevel=1000,
-                    criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03),
-                )
-                feature_params = dict(
-                    maxCorners=200, qualityLevel=0.045, minDistance=7, blockSize=10
-                )
+            lk_params = dict(
+                winSize=(10, 10),
+                maxLevel=1000,
+                criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03),
+            )
+            feature_params = dict(
+                maxCorners=200, qualityLevel=0.045, minDistance=7, blockSize=10
+            )
 
-                prev_gray = cv2.cvtColor(first_frame, cv2.COLOR_BGR2GRAY)
-                prev_gray_tracking = cv2.adaptiveThreshold(
-                    prev_gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2
-                )
-                gpu_prev_gray = cv2.cuda_GpuMat()
-                gpu_prev_gray_tracking = cv2.cuda_GpuMat()
-                gpu_prev_gray.upload(prev_gray)
-                gpu_prev_gray_tracking.upload(prev_gray_tracking)
+            prev_gray = cv2.cvtColor(first_frame, cv2.COLOR_BGR2GRAY)
+            prev_gray_tracking = cv2.adaptiveThreshold(
+                prev_gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2
+            )
+            gpu_prev_gray = cv2.cuda_GpuMat()
+            gpu_prev_gray_tracking = cv2.cuda_GpuMat()
+            gpu_prev_gray.upload(prev_gray)
+            gpu_prev_gray_tracking.upload(prev_gray_tracking)
 
-                prev_points = cv2.goodFeaturesToTrack(prev_gray, mask=None, **feature_params)
-                mask = np.zeros_like(first_frame)
-                refresh_speed_counter = 0
-                refresh_rate = 30
+            prev_points = cv2.goodFeaturesToTrack(prev_gray, mask=None, **feature_params)
+            mask = np.zeros_like(first_frame)
+            refresh_speed_counter = 0
+            refresh_rate = 30
 
-                roi_vertices = [(80, 308), (25, 598), (1073, 594), (991, 272)]
+            roi_vertices = [(80, 308), (25, 598), (1073, 594), (991, 272)]
 
-                frames = []
+            frames = []
 
-                while True:
-                    if self.is_aborted():
-                        return
-
+            logger.info("Running gets")
+            rabbit_queue = RabbitQueue()
+            while True:
+                if self.is_aborted():
+                    return
+                status = RedisManager().get_data(job_id)
+                if status['status']:
                     ret, frame = cap.read()
                     if len(frames) == 24:
                         results = process_stream(fps, frames, min_flow_magnitude, lk_params, prev_points, mask,
@@ -235,6 +236,9 @@ class ModelManager:
                                 "job_id": job_id
                             }
                             print(content)
+                            rabbit_queue.add_message_queue(
+                                "result_cameras", "result_cameras", content
+                            )
                         frames = []
                         fps_counter = results['fps_counter']
                         area_cm2_list = results['area_cm2_list']
@@ -243,83 +247,22 @@ class ModelManager:
                         raise ("Connection refused streem")
                     frames.append(frame)
 
-            except Exception as e:
-                retries += 1
-                print(e)
-                logger.error(f"Failed to connect to {job_id}")
-                if retries < max_retries:
-                    logger.warning("Retrying connection in 1 seconds...")
-                    time.sleep(1)
-
                 else:
-                    logger.error("Max connection retries reached. Exiting.")
+                    self.app.control.revoke(self.request.id, terminate=True)
+                    return
 
-    def start_process(self, job_id: str, stream_url: str):
-        max_retries = 5
-        retries = 0
+        except Exception as e:
+            retries += 1
+            print(e)
+            logger.error(f"Failed to connect to {job_id}")
+            if retries < max_retries:
+                logger.warning("Retrying connection in 1 seconds...")
+                time.sleep(1)
 
-        while retries < max_retries:
-            try:
-                cap = cv2.VideoCapture(stream_url)
-                frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                fps = int(cap.get(cv2.CAP_PROP_FPS))
-                codec_info = cap.get(cv2.CAP_PROP_FOURCC)
-                codec_fourcc = int(codec_info).to_bytes(4, byteorder="little").decode("utf-8")
-
-                cap.setExceptionMode(True)
-
-                if not cap.isOpened():
-                    raise Exception("Cap closed")
-
-                #rabbit_queue = RabbitQueue()
-                logger.success(f"Connection with {job_id} established")
-
-                while cap.isOpened():
-                    frames = []
-                    if self.is_aborted():
-                        return
-
-                    status = RedisManager().get_data(job_id)
-                    if status['status']:
-                        ret, frame = cap.read()
-                        if len(frames) > 24:
-                            content = {
-                                job_id: process_stream(frame_width, frame_height, fps, codec_info, codec_fourcc,
-                                                       frames),
-                                "job_id": job_id
-                            }
-
-                            print(content)
-                            frames = []
-
-                            rabbit_queue.add_message_queue(
-                                "result_cameras", "result_cameras", content
-                            )
-
-                        frames.append(frame)
-
-                    else:
-                        self.app.control.revoke(self.request.id, terminate=True)
-                        return
-
-                cap.release()
-                logger.info(f"consume_flow_of_frames of {job_id} disconnected")
-
-            except Exception:
-                retries += 1
-                logger.error(f"Failed to connect to {job_id}")
-                if retries < max_retries:
-                    logger.warning("Retrying connection in 1 seconds...")
-                    time.sleep(1)
-
-                else:
-                    logger.error("Max connection retries reached. Exiting.")
-                    raise
-
-
+            else:
+                logger.error("Max connection retries reached. Exiting.")
 
 
 if __name__ == "__main__":
-    manager = ModelManager()
-    manager.start_process("camera1", "rtsp://127.0.0.1:8554/")
+    path_to_video = r"rtsp://127.0.0.1:8554/"
+    process_video(path_to_video, "camera1")

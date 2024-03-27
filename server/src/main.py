@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.db.models import Base
 from src.db.database import engine
 
-from src.routes import job, report, video, work_data
+from src.routes import report, work_data, job
 
 
 async def create_data() -> None:
@@ -30,7 +30,6 @@ app = FastAPI(
 
 app.include_router(job.router)
 app.include_router(report.router)
-# app.include_router(video.router)
 app.include_router(work_data.router)
 
 app.add_middleware(

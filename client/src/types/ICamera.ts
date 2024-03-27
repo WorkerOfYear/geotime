@@ -3,7 +3,7 @@ interface ICoords {
   y: string;
 }
 
-interface IDetection {
+export interface IDetection {
   A: ICoords;
   B: ICoords;
   C: ICoords;
@@ -18,12 +18,18 @@ interface IData {
 
 export interface ICamera {
   id: string | null;
+  type: Array<"calibration" | "streaming">;
   data: IData;
   detection: IDetection;
 }
 
 export interface IInitialCameras {
+  detectionProcess: boolean;
+  detectionProcessId: string | null;
   camera1: ICamera;
   camera2: ICamera;
   camera3: ICamera;
+  detectionImg1: string;
+  detectionImg2: string;
+  detectionImg3: string;
 }

@@ -21,5 +21,5 @@ class RedisConfig:
 
 
 class RabbitConfig:
-    host = os.environ["RABBIT_HOST"]
-    #host ="localhost"
+    # host = os.environ["RABBIT_HOST"]
+    host ="localhost"

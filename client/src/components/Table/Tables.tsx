@@ -4,6 +4,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 
 import styles from "./Table.module.scss";
 import Video from "../Video";
+import DetectionVideo from "../Video/DetectionVideo";
 import { IReport } from "../../types/IReport";
 
 const override: CSSProperties = {
@@ -35,7 +36,7 @@ const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, cla
         {showStream && (
           <div className={styles.table__video}>
             <Video errorText={errorText} cameraUrl={cameraUrl} showVideo={showStream} />
-            <Video errorText={errorText} cameraUrl={cameraUrl} showVideo={showStream} />
+            <DetectionVideo errorText={errorText} cameraUrl={cameraUrl} showVideo={showStream} />
           </div>
         )}
         

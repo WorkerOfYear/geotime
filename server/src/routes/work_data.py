@@ -1,9 +1,11 @@
+import uuid
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from src.db.schemas.camera import Camera, GetWorkData
+from src.db.schemas.camera import Camera, GetWorkData, Calibration
 from src.db.schemas.wits import Wits
 from clients.redis_manager import RedisManager
+from src.tasks.tasks import test_calibration
 
 router = APIRouter(
     tags=["Work Data"],
@@ -13,12 +15,40 @@ router = APIRouter(
 
 @router.post("/camera", status_code=200)
 async def add_work_data_camera(camera: Camera):
-    if camera.id is None:
-        camera_id = RedisManager().add_data('camera', 'add', camera.dict())
-        return JSONResponse(status_code=200, content={"id": camera_id})
-    else:
-        RedisManager().add_data('camera', 'update', camera.dict())
-        return JSONResponse(status_code=200, content=True)
+    if camera.type[0] == "streaming":
+        if camera.id is None:
+            camera_id = RedisManager().add_data('camera', 'add', camera.dict())
+            return JSONResponse(status_code=200, content={"id": camera_id})
+        else:
+            RedisManager().add_data('camera', 'update', camera.dict())
+            return JSONResponse(status_code=200, content=True)
+    if camera.type[0] == "calibration":
+        camera_info = camera.dict()
+        camera_info['id'] = ''
+        RedisManager().add_data('camera', 'update', camera_info)
+        
+        calibration_id = str(uuid.uuid4())
+        data = {
+            'calibration_id': calibration_id,
+            'status': 'start',
+            'camera_id': camera.id,
+            'camera_url': camera.data.url,
+            'detection': camera.detection.dict()
+        }
+        RedisManager().add_data('calib', 'add', data)
+        print(data)
+        test_calibration.delay(data)
+        return JSONResponse(status_code=200, content={
+            'calibration_id': calibration_id
+        })
+
+
+@router.post("/stop_detection", status_code=200)
+async def add_work_data_wits(calib: Calibration):
+    calibration = RedisManager().get_data(calib.id)
+    calibration['status'] = 'stop'
+    RedisManager().add_data('calib', 'add', calibration)
+    return JSONResponse(status_code=200, content=True)
 
 
 @router.post("/wits", status_code=200)

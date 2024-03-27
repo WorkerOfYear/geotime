@@ -3,12 +3,13 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src_video.routes import video
-
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(
     title="Geotime Video",
     description="Rtsp Stream video",
 )
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(video.router)
 

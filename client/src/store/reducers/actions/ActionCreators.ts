@@ -5,19 +5,19 @@ import { jobSlice } from "../JobSlice";
 import { IJob } from "../../../types/IJob";
 import { ICamera } from "../../../types/ICamera";
 import { IWits } from "../../../types/IWits";
+import { cameraSlice } from "../CameraSlice";
 
-const JOB_CHANGE_STATUS =
-  String(import.meta.env.VITE_BASE_URL) +
-  String(import.meta.env.VITE_CHANGE_STATUS);
+const JOB_CHANGE_STATUS = String(import.meta.env.VITE_BASE_URL) + String(import.meta.env.VITE_CHANGE_STATUS);
 
-const SET_CAMERA =
-  String(import.meta.env.VITE_BASE_URL) + String(import.meta.env.VITE_CAMERA);
+const FIRST_IMG = String(import.meta.env.VITE_BASE_VIDEO_URL) + String(import.meta.env.VITE_FIRST_IMG);
 
-const SET_WITS =
-  String(import.meta.env.VITE_BASE_URL) + String(import.meta.env.VITE_WITS);
+const SET_DETECTION = String(import.meta.env.VITE_BASE_URL) + String(import.meta.env.VITE_CAMERA_DETECTION);
 
-const GET_DATA =
-  String(import.meta.env.VITE_BASE_URL) + String(import.meta.env.VITE_GET_DATA);
+const STOP_DETECTION = String(import.meta.env.VITE_BASE_URL) + String(import.meta.env.VITE_CAMERA_STOP);
+
+const SET_WITS = String(import.meta.env.VITE_BASE_URL) + String(import.meta.env.VITE_WITS);
+
+const GET_DATA = String(import.meta.env.VITE_BASE_URL) + String(import.meta.env.VITE_GET_DATA);
 
 export const startJob = (state: IJob) => async (dispatch: AppDispatch) => {
   try {
@@ -50,9 +50,9 @@ export const stopJob = (state: IJob | null) => async (dispatch: AppDispatch) => 
       camera2_is_active: false,
       camera3_id: "",
       camera3_is_active: false,
-    }
+    };
   }
-  
+
   try {
     const response = await axios.post(JOB_CHANGE_STATUS, {
       camera1_is_active: false,
@@ -74,20 +74,71 @@ export const stopJob = (state: IJob | null) => async (dispatch: AppDispatch) => 
   }
 };
 
-interface ISetCameraResponse {
-  id: string
+interface IFirstImg {
+  camera_id: string;
+  image_url: string;
 }
 
-export const setCamera = (state: ICamera) => async (dispatch: AppDispatch) => {
+export const getFirstImg = (cameraIndex: number, camera_url: string) => async (dispatch: AppDispatch) => {
   try {
-    const response = await axios.post<ISetCameraResponse>(SET_CAMERA, {
+    const response = await axios.get<IFirstImg>(FIRST_IMG, {
+      params: {
+        camera_url,
+      },
+    });
+    if (response.status === 200) {
+      console.log(response.data.image_url)
+      dispatch(cameraSlice.actions.setDetectionImg({cameraIndex: cameraIndex, url: response.data.image_url}));
+      dispatch(cameraSlice.actions.setCameraId({ cameraIndex: cameraIndex, id: response.data.camera_id }));
+    }
+    return response;
+  } catch (e) {
+    alert("Ошибка при запросе к серверу, попробуйте снова");
+  }
+};
+
+
+export const setCalibrationCamera = (state: ICamera) => async (dispatch: AppDispatch) => {
+  try {
+    const response = await axios.post<{calibration_id: string}>(SET_DETECTION, {
+      ...state,
+    });
+    console.log(response)
+    if (response.status === 200) {
+      dispatch(cameraSlice.actions.setDetectionProcess(true))
+      dispatch(cameraSlice.actions.setDetectionProcessId(response.data.calibration_id))
+    }
+    return response;
+  } catch (e) {
+    alert("Ошибка при запросе к серверу, попробуйте снова");
+  }
+};
+
+
+export const setStreamingCamera = (state: ICamera) => async (dispatch: AppDispatch) => {
+  try {
+    const response = await axios.post<{calibration_id: string}>(SET_DETECTION, {
       ...state,
     });
     if (response.status === 200) {
-      return response.data;
-    } else {
-      console.log(`setCamera status code: ${response.status}`);
+      console.log(response)
     }
+    return response;
+  } catch (e) {
+    alert("Ошибка при запросе к серверу, попробуйте снова");
+  }
+};
+
+export const stopDetection = (id: string) => async (dispatch: AppDispatch) => {
+  try {
+    const response = await axios.post<string>(STOP_DETECTION, {
+      id: id,
+    });
+    if (response.status === 200) {
+      dispatch(cameraSlice.actions.setDetectionProcess(false))
+      dispatch(cameraSlice.actions.setDetectionProcessId(null))
+    } 
+    return response;
   } catch (e) {
     alert("Ошибка при запросе к серверу, попробуйте снова");
   }
@@ -124,7 +175,7 @@ export const getCameraData = (id: string) => async (dispatch: AppDispatch) => {
 };
 
 interface IGetWitsDataResponse {
-  data: IWits
+  data: IWits;
 }
 
 export const getWitsData = () => async (dispatch: AppDispatch) => {
@@ -141,5 +192,3 @@ export const getWitsData = () => async (dispatch: AppDispatch) => {
     alert("Ошибка при запросе к серверу, попробуйте снова");
   }
 };
-
-
