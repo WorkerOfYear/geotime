@@ -10,7 +10,6 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { IInitialCameras } from "../types/ICamera";
 import { cameraSlice } from "../store/reducers/CameraSlice";
 import {
-  getCameraData,
   getFirstImg,
   setCalibrationCamera,
   setStreamingCamera,
@@ -125,21 +124,28 @@ const ProductPage = () => {
   };
 
   useEffect(() => {
+    console.log(Number(sieveId));
+
     switch (Number(sieveId)) {
       case 1:
         if (cameraReducer.detectionImg1) {
+          console.log("111111111");
           setFirstImageUrl(cameraReducer.detectionImg1);
+          break;
         }
       case 2:
         if (cameraReducer.detectionImg2) {
+          console.log("2222222222");
           setFirstImageUrl(cameraReducer.detectionImg2);
+          break;
         }
       case 3:
         if (cameraReducer.detectionImg3) {
+          console.log("33333333333");
           setFirstImageUrl(cameraReducer.detectionImg3);
         }
     }
-  }, [cameraReducer]);
+  }, [cameraReducer.detectionImg1, cameraReducer.detectionImg2, cameraReducer.detectionImg3, sieveId]);
 
   const handleCameraSubmit = () => {
     if (!cameraUrlInput || !productObject) return;

@@ -30,6 +30,12 @@ export interface IInitialCameras {
   camera2: ICamera;
   camera3: ICamera;
   detectionImg1: string;
+  coef_w_1: number;
+  coef_h_1: number;
   detectionImg2: string;
+  coef_w_2: number;
+  coef_h_2: number;
   detectionImg3: string;
+  coef_w_3: number;
+  coef_h_3: number;
 }
