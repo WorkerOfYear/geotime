@@ -39,7 +39,6 @@ const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, cla
             <DetectionVideo errorText={errorText} cameraUrl={cameraUrl} showVideo={showStream} />
           </div>
         )}
-        
         {isFetching && (
           <ClipLoader
             color={"#605dec"}
@@ -54,12 +53,12 @@ const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, cla
           {reports?.map((item: IReport, index: number) => (
             <div className={styles.bodyRow} key={index}>
               <div className={styles.item}>{item.created_at ? item.created_at : item.time}</div>
-              <div className={styles.item}>{item.depth}</div>
-              <div className={styles.item}>{item.cut_plan_volume}</div>
               <div className={styles.item}>{item.lag_depth}</div>
               <div className={styles.item}>{item.cut_plan_volume_with_out_well}</div>
               <div className={styles.item}>{item.cut_plan_volume_in_well}</div>
               <div className={styles.item}>{item.cut_fact_volume}</div>
+              <div className={styles.item}>{item.depth}</div>
+              <div className={styles.item}>{item.cut_plan_volume}</div>
               <div className={styles.item}>{item.cleaning_factor}</div>
             </div>
           ))}

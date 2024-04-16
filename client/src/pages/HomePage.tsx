@@ -26,7 +26,7 @@ const HomePage: React.FC = () => {
       console.log("fetching");
     }
   }
-
+  
   return (
     <div>
       <Header />

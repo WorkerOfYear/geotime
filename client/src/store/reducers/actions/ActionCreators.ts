@@ -8,15 +8,10 @@ import { IWits } from "../../../types/IWits";
 import { cameraSlice } from "../CameraSlice";
 
 const JOB_CHANGE_STATUS = String(import.meta.env.VITE_BASE_URL) + String(import.meta.env.VITE_CHANGE_STATUS);
-
 const FIRST_IMG = String(import.meta.env.VITE_BASE_VIDEO_URL) + String(import.meta.env.VITE_FIRST_IMG);
-
 const SET_DETECTION = String(import.meta.env.VITE_BASE_URL) + String(import.meta.env.VITE_CAMERA_DETECTION);
-
 const STOP_DETECTION = String(import.meta.env.VITE_BASE_URL) + String(import.meta.env.VITE_CAMERA_STOP);
-
 const SET_WITS = String(import.meta.env.VITE_BASE_URL) + String(import.meta.env.VITE_WITS);
-
 const GET_DATA = String(import.meta.env.VITE_BASE_URL) + String(import.meta.env.VITE_GET_DATA);
 
 export const startJob = (state: IJob) => async (dispatch: AppDispatch) => {

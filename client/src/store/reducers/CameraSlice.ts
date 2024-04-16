@@ -62,31 +62,55 @@ export const cameraSlice = createSlice({
       state.camera1 = action.payload;
     },
     setCamera2(state, action: PayloadAction<ICamera>) {
-      state.camera1 = action.payload;
+      state.camera2 = action.payload;
     },
     setCamera3(state, action: PayloadAction<ICamera>) {
-      state.camera1 = action.payload;
+      state.camera3 = action.payload;
     },
     setCameraId(state, action: PayloadAction<{ cameraIndex: number; id: string }>) {
       switch (action.payload.cameraIndex) {
         case 1:
           state.camera1.id = action.payload.id;
-          break
+          break;
         case 2:
           state.camera2.id = action.payload.id;
-          break
+          break;
         case 3:
           state.camera3.id = action.payload.id;
+      }
+    },
+    setCameraVolume(state, action: PayloadAction<{ cameraIndex: number; volume: string }>) {
+      switch (action.payload.cameraIndex) {
+        case 1:
+          state.camera1.data.volume = action.payload.volume;
+          break;
+        case 2:
+          state.camera2.data.volume = action.payload.volume;
+          break;
+        case 3:
+          state.camera3.data.volume = action.payload.volume;
+      }
+    },
+    setCameraSensitivity(state, action: PayloadAction<{ cameraIndex: number; sensitivity: string }>) {
+      switch (action.payload.cameraIndex) {
+        case 1:
+          state.camera1.data.sensitivity = action.payload.sensitivity;
+          break;
+        case 2:
+          state.camera2.data.sensitivity = action.payload.sensitivity;
+          break;
+        case 3:
+          state.camera3.data.sensitivity = action.payload.sensitivity;
       }
     },
     setDetectionImg(state, action: PayloadAction<{ cameraIndex: number; url: string }>) {
       switch (action.payload.cameraIndex) {
         case 1:
           state.detectionImg1 = action.payload.url;
-          break
+          break;
         case 2:
           state.detectionImg2 = action.payload.url;
-          break
+          break;
         case 3:
           state.detectionImg3 = action.payload.url;
       }
@@ -95,10 +119,10 @@ export const cameraSlice = createSlice({
       switch (action.payload.cameraIndex) {
         case 1:
           state.coef_w_1 = action.payload.coef;
-          break
+          break;
         case 2:
           state.coef_w_2 = action.payload.coef;
-          break
+          break;
         case 3:
           state.coef_w_3 = action.payload.coef;
       }
@@ -107,10 +131,10 @@ export const cameraSlice = createSlice({
       switch (action.payload.cameraIndex) {
         case 1:
           state.coef_h_1 = action.payload.coef;
-          break
+          break;
         case 2:
           state.coef_h_2 = action.payload.coef;
-          break
+          break;
         case 3:
           state.coef_h_3 = action.payload.coef;
       }
@@ -136,7 +160,7 @@ export const cameraSlice = createSlice({
               y: String(Math.round(parseInt(action.payload.points.D.y) * state.coef_h_1)),
             },
           };
-          break
+          break;
         case 2:
           state.camera2.detection = {
             A: {
@@ -156,7 +180,7 @@ export const cameraSlice = createSlice({
               y: String(Math.round(parseInt(action.payload.points.D.y) * state.coef_h_2)),
             },
           };
-          break
+          break;
         case 3:
           state.camera3.detection = {
             A: {

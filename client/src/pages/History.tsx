@@ -67,7 +67,7 @@ const History = () => {
                 <div className="history__header">
                     <Item value={date.date_from} onChange={handleFromChange} label={"Фильтр от"} type={"datetime-local"} />
                     <Item value={date.date_to} onChange={handleToChange} label={"Фильтр до"} type={"datetime-local"} />
-                    <button onClick={handleLoadReports} className="history__btn">Выгрузить отчет</button>
+                    <button onClick={handleLoadReports} className="history__btn">Выгрузить отчёт</button>
                     <Link className="history__link button" to="/">
                         На главную
                     </Link>
@@ -84,11 +84,11 @@ const History = () => {
             </div>
             <ReactPaginate
                 breakLabel="..."
-                nextLabel="next >"
+                nextLabel="вперёд >"
                 onPageChange={handlePageClick}
                 pageRangeDisplayed={5}
                 pageCount={pagesCount}
-                previousLabel="< previous"
+                previousLabel="< назад"
                 renderOnZeroPageCount={null}
                 containerClassName="react-paginate"
             />

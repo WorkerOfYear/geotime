@@ -1,69 +1,34 @@
 /// <reference types="vite-plugin-svgr/client" />
 
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import { useParams } from "react-router-dom";
 
 import Video from "../components/Video";
 import Item from "../components/Item";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
-import { IInitialCameras } from "../types/ICamera";
-import { cameraSlice } from "../store/reducers/CameraSlice";
+import CalibrateButtons from "../components/Buttons/CalibrateButtons/CalibrateButtons";
+import graph from "./../assets/images/graph.png";
+import DetectionImg from "../components/DetectionImg/DetectionImg";
+import DetectionVideo from "../components/Video/DetectionVideo";
+import useProductState from "../hooks/useProductState";
+import useProductFirstImg from "../hooks/useProductFirstImg";
+import BottomMenu from "../components/Product/BottomMenu";
 import {
   getFirstImg,
   setCalibrationCamera,
   setStreamingCamera,
   stopDetection,
 } from "../store/reducers/actions/ActionCreators";
-import { jobSlice } from "../store/reducers/JobSlice";
-import CalibrateButtons from "../components/Buttons/CalibrateButtons/CalibrateButtons";
-import graph from "./../assets/images/graph.png";
-import DetectionImg from "../components/DetectionImg/DetectionImg";
-import DetectionVideo from "../components/Video/DetectionVideo";
-
-function chooseCamera(id: string | undefined, reducer: IInitialCameras) {
-  if (id === "1") {
-    return {
-      name: "camera1",
-      errorText: "Видео с камеры 1",
-      action: {
-        setCamera: cameraSlice.actions.setCamera1,
-        setCameraId: jobSlice.actions.setCamera1Id,
-      },
-      ...reducer.camera1,
-    };
-  } else if (id === "2") {
-    return {
-      name: "camera2",
-      errorText: "Видео с камеры 2",
-      action: {
-        setCamera: cameraSlice.actions.setCamera2,
-        setCameraId: jobSlice.actions.setCamera2Id,
-      },
-      ...reducer.camera2,
-    };
-  } else if (id === "3") {
-    return {
-      name: "camera3",
-      errorText: "Видео с камеры 3",
-      action: {
-        setCamera: cameraSlice.actions.setCamera3,
-        setCameraId: jobSlice.actions.setCamera3Id,
-      },
-      ...reducer.camera3,
-    };
-  } else return null;
-}
+import Params from "../components/Product/Params";
+import chooseCamera from "../utils/camera";
+import Stopwatch from "../components/ui/Stopwatch/Stopwatch";
 
 const ProductPage = () => {
-  const [factValue, setFactValue] = useState<string>("");
-  const [sensity, setSensity] = useState<string>("");
-  const [cameraUrl, setCameraUrl] = useState<string>("");
   const [cameraUrlInput, setCameraUrlInput] = useState<string>("");
   const [showVideo, setShowVideo] = useState<boolean>(false);
-  const [firstImageUrl, setFirstImageUrl] = useState<string>("");
-
-  const navigate = useNavigate();
+  const [showTimer, setShowTimer] = useState<boolean>(false);
+  const [enableSubmit, setEnableSubmit] = useState<boolean>(false);
+  const [enableStartCalibration, setEnableStartCalibration] = useState<boolean>(false);
 
   const { sieve_id: sieveId } = useParams();
 
@@ -71,88 +36,59 @@ const ProductPage = () => {
   const cameraReducer = useAppSelector((state) => state.cameraReducer);
   const productObject = chooseCamera(sieveId, cameraReducer);
 
-  useEffect(() => {
-    if (productObject?.data.sensitivity) setSensity(productObject?.data.sensitivity);
-    if (productObject?.data.volume) setFactValue(productObject?.data.volume);
-  }, []);
+  const { factValue, sensity, cameraUrl, detection, setDetection } = useProductState(sieveId);
+  const firstImageUrl = useProductFirstImg(sieveId);
 
   useEffect(() => {
-    let url: string | null = null;
+    setCameraUrlInput(cameraUrl.value);
+  }, [cameraUrl.value]);
 
-    if (productObject) {
-      url = productObject.data.url;
-      if (!url) {
-        url = localStorage.getItem(productObject.name);
-        if (url) console.log(`Saved camera url: ${url}`);
-      }
-      if (url) {
-        setCameraUrl(url);
-        setCameraUrlInput(url);
-      }
-    }
-  }, []);
+  useEffect(() => {
+    if (!productObject) return;
+    setDetection(productObject.detection);
+  }, [productObject?.detection]);
 
-  const handleUrlInputChange = (e: React.FormEvent<HTMLInputElement>) => {
-    setCameraUrlInput(e.currentTarget.value);
-  };
-
-  const handleSubmitBtn = () => {
-    if (cameraUrl && productObject) {
-      if (cameraUrl !== cameraUrlInput) {
-        alert("Камера была изменена после получения первого кадра!");
-        return;
-      }
-      dispatch(
-        productObject.action.setCamera({
-          id: productObject.id,
-          detection: productObject.detection,
-          type: productObject.type,
-          data: { ...productObject.data, sensitivity: sensity, volume: factValue },
-        })
+  const handleSubmit = () => {
+    if (!cameraUrl || !productObject) return;
+    if (cameraUrl.value !== cameraUrlInput) {
+      alert(
+        `Камера была изменена после получения первого кадра! Калибровка выполнялась для камеры с url: ${cameraUrl.value}`
       );
-      dispatch(
-        setStreamingCamera({
+      return;
+    }
+    dispatch(
+      productObject.action.setCamera({
+        id: productObject.id,
+        detection: productObject.detection,
+        type: productObject.type,
+        data: { ...productObject.data, sensitivity: sensity.value, volume: factValue.value },
+      })
+    );
+    dispatch(
+      setStreamingCamera({
+        id: productObject.id,
+        type: ["streaming"],
+        data: { ...productObject.data },
+        detection: productObject.detection,
+      })
+    ).then(() => {
+      dispatch(productObject.action.setCameraId(productObject.id));
+      localStorage.setItem(
+        productObject.name,
+        JSON.stringify({
           id: productObject.id,
           type: ["streaming"],
           data: { ...productObject.data },
           detection: productObject.detection,
         })
-      ).then(() => {
-        dispatch(productObject.action.setCameraId(productObject.id));
-      });
-    }
+      );
+    });
   };
-
-  useEffect(() => {
-    console.log(Number(sieveId));
-
-    switch (Number(sieveId)) {
-      case 1:
-        if (cameraReducer.detectionImg1) {
-          console.log("111111111");
-          setFirstImageUrl(cameraReducer.detectionImg1);
-          break;
-        }
-      case 2:
-        if (cameraReducer.detectionImg2) {
-          console.log("2222222222");
-          setFirstImageUrl(cameraReducer.detectionImg2);
-          break;
-        }
-      case 3:
-        if (cameraReducer.detectionImg3) {
-          console.log("33333333333");
-          setFirstImageUrl(cameraReducer.detectionImg3);
-        }
-    }
-  }, [cameraReducer.detectionImg1, cameraReducer.detectionImg2, cameraReducer.detectionImg3, sieveId]);
 
   const handleCameraSubmit = () => {
     if (!cameraUrlInput || !productObject) return;
-
-    setCameraUrl(cameraUrlInput);
+    cameraUrl.setValue(cameraUrlInput);
     setShowVideo(true);
-    localStorage.setItem(productObject.name, cameraUrlInput);
     dispatch(
       productObject.action.setCamera({
         id: productObject.id,
@@ -161,8 +97,11 @@ const ProductPage = () => {
         data: { ...productObject.data, url: cameraUrlInput },
       })
     );
-
-    dispatch(getFirstImg(Number(sieveId), cameraUrlInput));
+    dispatch(getFirstImg(Number(sieveId), cameraUrlInput)).then((respnse) => {
+      if (respnse?.status === 200) {
+        setEnableStartCalibration(true);
+      }
+    });
   };
 
   const handleStartCalibration = () => {
@@ -175,11 +114,17 @@ const ProductPage = () => {
         detection: productObject.detection,
       })
     );
+    setShowTimer(true);
   };
 
   const handleStopCalibration = () => {
     if (!cameraReducer.detectionProcessId) return;
-    dispatch(stopDetection(cameraReducer.detectionProcessId));
+
+    dispatch(stopDetection(cameraReducer.detectionProcessId)).then((response) => {
+      if (response?.status === 200) {
+        setEnableSubmit(true);
+      }
+    });
   };
 
   return (
@@ -188,10 +133,12 @@ const ProductPage = () => {
       <div className="product__header">
         <div>
           <CalibrateButtons
-            disabled={cameraReducer.detectionProcess}
+            disabledStart={cameraReducer.detectionProcess || !enableStartCalibration}
+            disabledStop={!cameraReducer.detectionProcess}
             onStart={handleStartCalibration}
             onStop={handleStopCalibration}
           />
+          {showTimer ? <Stopwatch start={cameraReducer.detectionProcess} /> : null}
         </div>
       </div>
       <div className="product__body">
@@ -201,7 +148,7 @@ const ProductPage = () => {
             <div style={{ display: "flex" }}>
               <Item
                 value={cameraUrlInput}
-                onChange={handleUrlInputChange}
+                onChange={(e) => setCameraUrlInput(e.currentTarget.value)}
                 placeholder={"rtsp://host:port/path"}
               />
               <button onClick={handleCameraSubmit} className="button button--border">
@@ -213,7 +160,7 @@ const ProductPage = () => {
             <Video
               className={"product-video"}
               errorText={productObject?.errorText}
-              cameraUrl={cameraUrl}
+              cameraUrl={cameraUrl.value}
               showVideo={showVideo}
             />
           </div>
@@ -224,128 +171,18 @@ const ProductPage = () => {
               <DetectionVideo
                 className={"product-video"}
                 errorText="Видео с детекцией"
-                cameraUrl={cameraUrl}
+                cameraUrl={cameraUrl.value}
                 showVideo={showVideo}
               />
             )}
           </div>
         </div>
-        <div className="product__col">
-          <div className="product__info">
-            <span>Фактический объем, л</span>
-            <Item
-              type="number"
-              placeholder={"0.00"}
-              value={factValue}
-              onChange={(e) => setFactValue(e.currentTarget.value)}
-            />
-          </div>
-          <div className="product__info">
-            <span>Чувствительность</span>
-            <Item
-              type="number"
-              placeholder={"0.00"}
-              value={sensity}
-              onChange={(e) => setSensity(e.currentTarget.value)}
-            />
-          </div>
-          <div className="product__info product__info--bg">
-            <span>
-              Окно <br /> детектирования:
-            </span>
-            <div className="product__info-wrapper">
-              <div className="product__info-details">
-                A
-                <Item
-                  placeholder={"0"}
-                  label={"Координата Х"}
-                  value={productObject?.detection.A.x}
-                  readOnly={true}
-                />
-                <Item
-                  placeholder={"0"}
-                  label={"Координата Y"}
-                  value={productObject?.detection.A.y}
-                  readOnly={true}
-                />
-              </div>
-              <div className="product__info-details">
-                B
-                <Item
-                  placeholder={"0"}
-                  label={"Координата Х"}
-                  value={productObject?.detection.B.x}
-                  readOnly={true}
-                />
-                <Item
-                  placeholder={"0"}
-                  label={"Координата Y"}
-                  value={productObject?.detection.B.y}
-                  readOnly={true}
-                />
-              </div>
-              <div className="product__info-details">
-                C
-                <Item
-                  placeholder={"0"}
-                  label={"Координата Х"}
-                  value={productObject?.detection.C.x}
-                  readOnly={true}
-                />
-                <Item
-                  placeholder={"0"}
-                  label={"Координата Y"}
-                  value={productObject?.detection.C.y}
-                  readOnly={true}
-                />
-              </div>
-              <div className="product__info-details">
-                D
-                <Item
-                  placeholder={"0"}
-                  label={"Координата Х"}
-                  value={productObject?.detection.D.x}
-                  readOnly={true}
-                />
-                <Item
-                  placeholder={"0"}
-                  label={"Координата Y"}
-                  value={productObject?.detection.D.y}
-                  readOnly={true}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        <Params factValue={factValue} sensity={sensity} detection={detection} />
       </div>
-      <div className="product__bottom">
-        <Link className="product__link" to="/">
-          На главную
-        </Link>
-        <AlertDialog.Root>
-          <AlertDialog.Trigger asChild>
-            <button className="button button--border" onClick={handleSubmitBtn}>
-              Применить
-            </button>
-          </AlertDialog.Trigger>
-          <AlertDialog.Portal>
-            <AlertDialog.Overlay className="AlertDialogOverlay" />
-            <AlertDialog.Content className="AlertDialogContent">
-              <AlertDialog.Title className="AlertDialogTitle">
-                Калибровка выполнена! Перейти на главную страницу?
-              </AlertDialog.Title>
-              <div style={{ display: "flex", gap: 25, justifyContent: "flex-end" }}>
-                <AlertDialog.Cancel asChild>
-                  <button className="button">Остаться</button>
-                </AlertDialog.Cancel>
-                <AlertDialog.Action asChild onClick={() => navigate("/")}>
-                  <button className="button button--border">На главную</button>
-                </AlertDialog.Action>
-              </div>
-            </AlertDialog.Content>
-          </AlertDialog.Portal>
-        </AlertDialog.Root>
-      </div>
+      <BottomMenu
+        disabled={!(enableSubmit && factValue.value && sensity.value && !cameraReducer.detectionProcess)}
+        onSubmit={handleSubmit}
+      />
     </div>
   );
 };

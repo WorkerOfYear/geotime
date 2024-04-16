@@ -34,13 +34,26 @@
   color: #fff;
 }
 
+.button--border:disabled {
+  border-color: #D9D9D9;
+  background-color: #fff;
+  color: #aaa;
+}
+
+.button--border-disabled {
+    user-select: none;
+    background-color: #cdd6e5;
+    color: #8594ae;
+    border-color: #8594ae;
+}
+
 .home {
   &__table {
     height: auto;
     overflow-y: auto;
     padding-right: rem(40px);
     margin-right: rem(-40px);
-    border-right: rem(1px) solid #E3E3E3;
+    border-right: rem(1px) solid #D9D9D9;
     width: 1750px;
 
     &::-webkit-scrollbar {
@@ -83,7 +96,6 @@
   &__link {
     position: absolute;
     right: 0;
-    top: rem(32px);
   }
 
   &__body {

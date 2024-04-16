@@ -4,16 +4,19 @@ import { Portal } from "react-konva-utils";
 import { IDetection } from "../../types/ICamera";
 
 interface Props {
+  initialPoints: Array<number[]> | null;
   onPointsChange: (points: IDetection) => void;
 }
 
-const DetectionAreaSpawner = ({ onPointsChange }: Props) => {
-  const [points, setPoints] = useState([
-    [20, 20],
-    [20, 210],
-    [432, 210],
-    [432, 20],
-  ]);
+const initialValue = [
+  [20, 20],
+  [20, 210],
+  [432, 210],
+  [432, 20],
+];
+
+const DetectionAreaSpawner = ({ initialPoints, onPointsChange }: Props) => {
+  const [points, setPoints] = useState(() => initialValue);
 
   useEffect(() => {
     onPointsChange({
@@ -23,6 +26,14 @@ const DetectionAreaSpawner = ({ onPointsChange }: Props) => {
       D: { x: String(Math.round(points[3][0])), y: String(Math.round(points[3][1])) },
     });
   }, [points]);
+
+  useEffect(() => {
+    if (initialPoints) {
+      setPoints(initialPoints);
+    } else {
+      setPoints(() => initialValue);
+    }
+  }, [initialPoints]);
 
   const [pointsLetters, setPointsLetters] = useState([
     {
@@ -48,7 +59,7 @@ const DetectionAreaSpawner = ({ onPointsChange }: Props) => {
   ]);
 
   const handlePointMouseOver = (event: any) => {
-    const stage = (event.target.getStage().container().style.cursor = "move");
+    event.target.getStage().container().style.cursor = "move";
   };
 
   const handlePointMouseOut = (event: any) => {
@@ -56,6 +67,7 @@ const DetectionAreaSpawner = ({ onPointsChange }: Props) => {
   };
 
   const handlePointDragMove = (event: any, index: number) => {
+    console.log("handlePointDragMove");
     const pos = [event.target._lastPos.x, event.target._lastPos.y];
     setPoints([...points.slice(0, index), pos, ...points.slice(index + 1)]);
   };

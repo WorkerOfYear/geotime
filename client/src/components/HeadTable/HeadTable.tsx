@@ -1,20 +1,31 @@
-import React from 'react';
+import React from "react";
 import styles from "./HeadTable.module.scss";
 import clsx from "clsx";
 
 type Props = {
-    className?: string
-}
-const HeadTable = ({className}: Props) => {
-    const tableHeader = ['Время', 'Расход факт, м3/с', 'Объем факт, м3/с', 'Глубина, м', 'Проходка, м', 'Диам.скв, м', 'Объем план,м3/с', 'Коэф-т очистки']
+  className?: string;
+};
+const HeadTable = ({ className }: Props) => {
+  const tableHeader = [
+    "Время",
+    "Глубина, м",
+    "Проходка, м",
+    "Диам.скв, м",
+    <span>Объём план,мм<sup>3</sup>/с</span>,
+    <span>Расход факт, мм<sup>3</sup>/с</span>,
+    <span>Обёем факт, мм<sup>3</sup>/с</span>,
+    "Коэф-т очистки",
+  ];
 
-    return (
-        <div className={clsx(className, styles.head)}>
-            {tableHeader.map(item => (
-                <div className={styles.headRow} key={item}>{item}</div>
-            ))}
+  return (
+    <div className={clsx(className, styles.head)}>
+      {tableHeader.map((item, index) => (
+        <div className={styles.headRow} key={index}>
+          {item}
         </div>
-    );
+      ))}
+    </div>
+  );
 };
 
 export default HeadTable;
