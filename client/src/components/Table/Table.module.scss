@@ -4,7 +4,7 @@
   &__body {
     display: flex;
     flex-direction: column;
-    gap: rem(4px);
+    gap: rem(6px);
     height: rem(242px);
     overflow-y: auto;
     border-right: rem(1px) solid #E3E3E3;
@@ -44,7 +44,7 @@
   margin-left: auto;
   display: grid;
   grid-template-columns: rem(145px) rem(93px) rem(93px) rem(80px) rem(80px) rem(80px) rem(80px) rem(80px);
-  gap: rem(4px);
+  gap: rem(7px);
 
 }
 

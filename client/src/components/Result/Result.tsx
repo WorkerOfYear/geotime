@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./Result.module.scss";
 import { IReport } from "../../types/IReport";
+import { formatDate } from "../../utils/reports";
 
 interface ResultProps {
   report?: IReport;
@@ -15,7 +16,7 @@ const Result = ({ report }: ResultProps) => {
           <div className={styles.result__body}>
             {report ? (
               <div className={styles.bodyRow}>
-                <div className={styles.item}>{report.time}</div>
+                <div className={styles.item}>{formatDate(report.time)}</div>
                 <div className={styles.item}>{report.lag_depth}</div>
                 <div className={styles.item}>{report.cut_plan_volume_with_out_well}</div>
                 <div className={styles.item}>{report.cut_plan_volume_in_well}</div>

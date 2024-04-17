@@ -6,6 +6,7 @@ import styles from "./Table.module.scss";
 import Video from "../Video";
 import DetectionVideo from "../Video/DetectionVideo";
 import { IReport } from "../../types/IReport";
+import { formatDate } from "../../utils/reports";
 
 const override: CSSProperties = {
   marginTop: "5em",
@@ -29,7 +30,7 @@ const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, cla
   } else if (id === 3) {
     errorText = "Видео с вибросито 3";
   }
-
+  console.log(reports);
   return (
     <div className={styles.table}>
       <div className={styles.table__content}>
@@ -52,7 +53,7 @@ const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, cla
         <div className={clsx(classBody, styles.table__body)}>
           {reports?.map((item: IReport, index: number) => (
             <div className={styles.bodyRow} key={index}>
-              <div className={styles.item}>{item.created_at ? item.created_at : item.time}</div>
+              <div className={styles.item}>{formatDate(item.created_at ? item.created_at : item.time)}</div>
               <div className={styles.item}>{item.lag_depth}</div>
               <div className={styles.item}>{item.cut_plan_volume_with_out_well}</div>
               <div className={styles.item}>{item.cut_plan_volume_in_well}</div>
