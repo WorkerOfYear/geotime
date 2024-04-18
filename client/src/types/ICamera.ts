@@ -1,4 +1,4 @@
-interface ICoords {
+export interface ICoords {
   x: string;
   y: string;
 }
@@ -10,7 +10,7 @@ export interface IDetection {
   D: ICoords;
 }
 
-interface IData {
+export interface IData {
   url: string;
   volume: string;
   sensitivity: string;

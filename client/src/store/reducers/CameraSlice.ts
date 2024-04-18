@@ -8,7 +8,7 @@ function generate_initial_camera_data(): ICamera {
     data: {
       url: "",
       volume: "",
-      sensitivity: "",
+      sensitivity: "0",
     },
     detection: {
       A: {

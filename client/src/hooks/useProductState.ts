@@ -4,6 +4,7 @@ import { ICamera, IDetection, IInitialCameras } from "../types/ICamera";
 import { useAppDispatch, useAppSelector } from "./redux";
 import { cameraSlice } from "../store/reducers/CameraSlice";
 import { jobSlice } from "../store/reducers/JobSlice";
+import { checkCamera } from "../utils/validate";
 
 function chooseCamera(id: string | undefined, reducer: IInitialCameras) {
   if (id === "1") {
@@ -45,22 +46,26 @@ export default function useProductState(sieveId: string | undefined) {
 
     const localStoreData = localStorage.getItem(productObject.name);
     if (localStoreData) {
-      const camera: ICamera = JSON.parse(localStoreData);
-      dispatch(productObject.setCamera(camera));
-      setSensity(camera.data.sensitivity);
-      setFactValue(camera.data.volume);
-      setCameraUrl(camera.data.url);
-      setDetection(camera.detection);
+      let camera = {};
+      try {
+        camera = JSON.parse(localStoreData);
+        if (checkCamera(camera)) {
+          dispatch(productObject.setCamera(camera));
+          setSensity(camera.data.sensitivity);
+          setFactValue(camera.data.volume);
+          setCameraUrl(camera.data.url);
+          setDetection(camera.detection);
 
-      dispatch(productObject.setCameraId(camera.id));
-      return;
+          dispatch(productObject.setCameraId(camera.id));
+          return;
+        }
+      } catch (e) {
+        console.log("Incorrect localstore data");
+      }
     }
 
-    if (productObject.data.sensitivity) {
-      setSensity(productObject.data.sensitivity);
-    } else {
-      setSensity("");
-    }
+    setSensity(productObject.data.sensitivity);
+    
     if (productObject.data.volume) {
       setFactValue(productObject.data.volume);
     } else {

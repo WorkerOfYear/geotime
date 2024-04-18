@@ -1,6 +1,7 @@
 import React from "react";
 import Item from "../Item";
 import { IDetection } from "../../types/ICamera";
+import CustomRadioGroup from "../ui/form/RadioGroup/CustomRadioGroup";
 
 type Props = {
   factValue: {
@@ -29,12 +30,22 @@ const Params = ({ factValue, sensity, detection }: Props) => {
         </div>
         <div className="product__info">
           <span>Чувствительность</span>
-          <Item
+          <CustomRadioGroup
+            value={sensity.value === "1" ? "sesivity" : "default"}
+            handleChange={(value: string) => {
+              if (value === "sesivity") {
+                sensity.setValue("1");
+              } else {
+                sensity.setValue("0");
+              }
+            }}
+          />
+          {/* <Item
             type="number"
             placeholder={"0.00"}
             value={sensity.value}
             onChange={(e) => sensity.setValue(e.currentTarget.value)}
-          />
+          /> */}
         </div>
         <div className="product__info product__info--bg">
           <span>
@@ -43,23 +54,63 @@ const Params = ({ factValue, sensity, detection }: Props) => {
           <div className="product__info-wrapper">
             <div className="product__info-details">
               A
-              <Item placeholder={"0"} label={"Координата Х"} value={detection ? detection.A.x : ""} readOnly={true} />
-              <Item placeholder={"0"} label={"Координата Y"} value={detection ? detection.A.y : ""} readOnly={true} />
+              <Item
+                placeholder={"0"}
+                label={"Координата Х"}
+                value={detection ? detection.A.x : ""}
+                readOnly={true}
+              />
+              <Item
+                placeholder={"0"}
+                label={"Координата Y"}
+                value={detection ? detection.A.y : ""}
+                readOnly={true}
+              />
             </div>
             <div className="product__info-details">
               B
-              <Item placeholder={"0"} label={"Координата Х"} value={detection ? detection.B.x : ""} readOnly={true} />
-              <Item placeholder={"0"} label={"Координата Y"} value={detection ? detection.B.y : ""} readOnly={true} />
+              <Item
+                placeholder={"0"}
+                label={"Координата Х"}
+                value={detection ? detection.B.x : ""}
+                readOnly={true}
+              />
+              <Item
+                placeholder={"0"}
+                label={"Координата Y"}
+                value={detection ? detection.B.y : ""}
+                readOnly={true}
+              />
             </div>
             <div className="product__info-details">
               C
-              <Item placeholder={"0"} label={"Координата Х"} value={detection ? detection.C.x : ""} readOnly={true} />
-              <Item placeholder={"0"} label={"Координата Y"} value={detection ? detection.C.y : ""} readOnly={true} />
+              <Item
+                placeholder={"0"}
+                label={"Координата Х"}
+                value={detection ? detection.C.x : ""}
+                readOnly={true}
+              />
+              <Item
+                placeholder={"0"}
+                label={"Координата Y"}
+                value={detection ? detection.C.y : ""}
+                readOnly={true}
+              />
             </div>
             <div className="product__info-details">
               D
-              <Item placeholder={"0"} label={"Координата Х"} value={detection ? detection.D.x : ""} readOnly={true} />
-              <Item placeholder={"0"} label={"Координата Y"} value={detection ? detection.D.y : ""} readOnly={true} />
+              <Item
+                placeholder={"0"}
+                label={"Координата Х"}
+                value={detection ? detection.D.x : ""}
+                readOnly={true}
+              />
+              <Item
+                placeholder={"0"}
+                label={"Координата Y"}
+                value={detection ? detection.D.y : ""}
+                readOnly={true}
+              />
             </div>
           </div>
         </div>
