@@ -34,8 +34,8 @@
 
   &__content {
     display: flex;
-    justify-content: space-between;
-    gap: rem(10px);
+    justify-content: end;
+    gap: rem(50px);
   }
 }
 

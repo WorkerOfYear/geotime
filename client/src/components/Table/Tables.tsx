@@ -30,7 +30,17 @@ const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, cla
   } else if (id === 3) {
     errorText = "Видео с вибросито 3";
   }
-  console.log(reports);
+
+  const chooseFactVolome = (item: IReport) => {
+    if (id === 1) {
+      return item.cut_fact_volume_1;
+    } else if (id === 2) {
+      return item.cut_fact_volume_2;
+    } else if (id === 3) {
+      return item.cut_fact_volume_3;
+    }
+  };
+
   return (
     <div className={styles.table}>
       <div className={styles.table__content}>
@@ -54,12 +64,12 @@ const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, cla
           {reports?.map((item: IReport, index: number) => (
             <div className={styles.bodyRow} key={index}>
               <div className={styles.item}>{formatDate(item.created_at ? item.created_at : item.time)}</div>
-              <div className={styles.item}>{item.lag_depth}</div>
-              <div className={styles.item}>{item.cut_plan_volume_with_out_well}</div>
-              <div className={styles.item}>{item.cut_plan_volume_in_well}</div>
-              <div className={styles.item}>{item.cut_fact_volume}</div>
               <div className={styles.item}>{item.depth}</div>
+              <div className={styles.item}>{item.lag_depth}</div>
+              <div className={styles.item}>{item.well_diam}</div>
               <div className={styles.item}>{item.cut_plan_volume}</div>
+              <div className={styles.item}>{item.cut_plan_volume_with_out_well}</div>
+              <div className={styles.item}>{chooseFactVolome(item)}</div>
               <div className={styles.item}>{item.cleaning_factor}</div>
             </div>
           ))}

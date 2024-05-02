@@ -11,9 +11,9 @@ const HeadTable = ({ className }: Props) => {
     "Глубина, м",
     "Проходка, м",
     "Диам.скв, м",
-    <span>Объём план,мм<sup>3</sup>/с</span>,
+    <span>Объём план, мм<sup>3</sup>/с</span>,
     <span>Расход факт, мм<sup>3</sup>/с</span>,
-    <span>Обёем факт, мм<sup>3</sup>/с</span>,
+    <span>Объем факт, мм<sup>3</sup>/с</span>,
     "Коэф-т очистки",
   ];
 

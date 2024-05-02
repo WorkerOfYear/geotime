@@ -61,11 +61,12 @@ export default function useProductState(sieveId: string | undefined) {
         }
       } catch (e) {
         console.log("Incorrect localstore data");
+        localStorage.removeItem(productObject.name);
       }
     }
 
     setSensity(productObject.data.sensitivity);
-    
+
     if (productObject.data.volume) {
       setFactValue(productObject.data.volume);
     } else {

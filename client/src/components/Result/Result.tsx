@@ -17,12 +17,12 @@ const Result = ({ report }: ResultProps) => {
             {report ? (
               <div className={styles.bodyRow}>
                 <div className={styles.item}>{formatDate(report.time)}</div>
-                <div className={styles.item}>{report.lag_depth}</div>
-                <div className={styles.item}>{report.cut_plan_volume_with_out_well}</div>
-                <div className={styles.item}>{report.cut_plan_volume_in_well}</div>
-                <div className={styles.item}>{report.cut_fact_volume}</div>
                 <div className={styles.item}>{report.depth}</div>
+                <div className={styles.item}>{report.lag_depth}</div>
+                <div className={styles.item}>{report.well_diam}</div>
                 <div className={styles.item}>{report.cut_plan_volume}</div>
+                <div className={styles.item}>{report.cut_plan_volume_with_out_well}</div>
+                <div className={styles.item}>{report.cut_fact_volume}</div>
                 <div className={styles.item}>{report.cleaning_factor}</div>
               </div>
             ) : null}
