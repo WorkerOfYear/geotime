@@ -7,12 +7,14 @@ from src.db.models import Report
 
 
 def create_report(session, report: dict, job_id: str):
+    logger.debug(report)
     if report:
         db_report = Report(
             job_id=job_id,
             depth=float(report["depth"]),
             cut_plan_volume=float(report["cut_plan_volume"]),
             lag_depth=float(report["lag_depth"]),
+            well_diam=float(report["well_diam"]),
             cut_plan_volume_with_out_well=float(report["cut_plan_volume_with_out_well"]),
             cut_plan_volume_in_well=float(report["cut_plan_volume_in_well"]),
             cut_fact_volume_1=float(report["cut_fact_volume_1"]),
@@ -45,8 +47,9 @@ def get_reports(session, date_from: str = None, date_to: str = None, page: int =
         return [
             {
                 "depth": report.depth,
-                "cut_plan_volume": report.cut_plan_volume,
                 "lag_depth": report.lag_depth,
+                "well_diam": report.well_diam,
+                "cut_plan_volume": report.cut_plan_volume,
                 "cut_plan_volume_with_out_well": report.cut_plan_volume_with_out_well,
                 "cut_plan_volume_in_well": report.cut_plan_volume_in_well,
                 "cut_fact_volume_1": report.cut_fact_volume_1,

@@ -19,8 +19,9 @@ class Report(BaseModel):
 
     job_id = Column(String)
     depth = Column(Float, nullable=True)
-    cut_plan_volume = Column(Float, nullable=True)
     lag_depth = Column(Float, nullable=True)
+    well_diam = Column(Float, nullable=True)
+    cut_plan_volume = Column(Float, nullable=True)
     cut_plan_volume_with_out_well = Column(Float, nullable=True)
     cut_plan_volume_in_well = Column(Float, nullable=True)
     cut_fact_volume_1 = Column(Float, nullable=True)

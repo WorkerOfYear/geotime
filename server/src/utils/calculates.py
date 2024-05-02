@@ -19,7 +19,7 @@ def predict_data(chunks1):
 def result_process_data(prev_data: dict, current_data: list) -> dict:
     wits_data = current_data[0]
     cameras_dict = current_data[1]
-    
+    logger.debug(cameras_dict)
     cameras = []
     if "camera1" in cameras_dict:
         camera1_data = cameras_dict["camera1"]
@@ -70,22 +70,16 @@ def result_process_data(prev_data: dict, current_data: list) -> dict:
         cpv=cut_plan_volume, cpvwow=cut_plan_volume_with_out_well
     )
 
-    total_shlam_volume_list = []
     cut_fact_volume_list = []
     for i in range(n_cameras):
-        average_speed = cameras[i]["average_speed"]
-        total_shlam_square = cameras[i]["total_shlam_square"]
-
         total_shlam_volume = cameras[i]["total_shlam_volume"]
-        total_shlam_volume_list.append(float(total_shlam_volume))
-
         prev_cut_fact_volume = prev_cut_fact_volume_list[i]
+        
         cut_fact_volume = values.CutFactVolume.process_value(
             cfv0=prev_cut_fact_volume, cfvd=total_shlam_volume
         )
         cut_fact_volume_list.append(float(cut_fact_volume))
 
-    cut_fact_volume_delta_sum = sum(total_shlam_volume_list)
     cut_fact_volume_sum = sum(cut_fact_volume_list)
 
     cleaning_factor = values.CleaningFactor.process_value(
@@ -112,8 +106,9 @@ def result_process_data(prev_data: dict, current_data: list) -> dict:
     res = {
         "time": str(datetime.now()),
         "depth": round(float(depth), 2),
-        "cut_plan_volume": round(float(cut_plan_volume), 2),
         "lag_depth": round(float(lag_depth), 2),
+        "well_diam": round(float(well_diam), 2),
+        "cut_plan_volume": round(float(cut_plan_volume), 2),
         "cut_plan_volume_with_out_well": round(float(cut_plan_volume_with_out_well), 2),
         "cut_plan_volume_in_well": round(float(cut_plan_volume_in_well), 2),
         "cut_fact_volume_1": round(float(cut_fact_volume_1), 2),
