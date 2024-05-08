@@ -19,7 +19,6 @@ def predict_data(chunks1):
 def result_process_data(prev_data: dict, current_data: list) -> dict:
     wits_data = current_data[0]
     cameras_dict = current_data[1]
-    logger.debug(cameras_dict)
     cameras = []
     if "camera1" in cameras_dict:
         camera1_data = cameras_dict["camera1"]
@@ -32,7 +31,7 @@ def result_process_data(prev_data: dict, current_data: list) -> dict:
     if "camera3" in cameras_dict:
         camera3_data = cameras_dict["camera3"]
         cameras.append(camera3_data)
-    
+
     n_cameras = len(cameras)
 
     if prev_data:
@@ -74,7 +73,7 @@ def result_process_data(prev_data: dict, current_data: list) -> dict:
     for i in range(n_cameras):
         total_shlam_volume = cameras[i]["total_shlam_volume"]
         prev_cut_fact_volume = prev_cut_fact_volume_list[i]
-        
+
         cut_fact_volume = values.CutFactVolume.process_value(
             cfv0=prev_cut_fact_volume, cfvd=total_shlam_volume
         )
@@ -102,7 +101,7 @@ def result_process_data(prev_data: dict, current_data: list) -> dict:
         cut_fact_volume_1 = 0
         cut_fact_volume_2 = 0
         cut_fact_volume_3 = 0
-        
+
     res = {
         "time": str(datetime.now()),
         "depth": round(float(depth), 2),
@@ -114,42 +113,41 @@ def result_process_data(prev_data: dict, current_data: list) -> dict:
         "cut_fact_volume_1": round(float(cut_fact_volume_1), 2),
         "cut_fact_volume_2": round(float(cut_fact_volume_2), 2),
         "cut_fact_volume_3": round(float(cut_fact_volume_3), 2),
-        "cut_fact_volume": round(float(cut_fact_volume), 2),
+        "cut_fact_volume": round(float(cut_fact_volume_sum), 2),
         "cleaning_factor": round(float(cleaning_factor), 5),
     }
 
     return res
 
-
-if __name__ == "__main__":
-    current_data = [
-        {
-            "depth": "41",
-            "lag_depth": "131",
-            "well_diam": "41",
-        },
-        {
-            "camera1": {
-                "total_shlam_square": "13",
-                "total_shlam_volume": "51",
-                "average_speed": "34",
-            },
-            "camera2": {
-                "total_shlam_square": "13241",
-                "total_shlam_volume": "5143",
-                "average_speed": "1341",
-            },
-            "camera3": {
-                "total_shlam_square": "13241",
-                "total_shlam_volume": "5143",
-                "average_speed": "1341",
-            }
-        },
-    ]
-
-    prev_data = None
-    while True:
-        res = result_process_data(prev_data, current_data)
-        logger.info(res)
-        prev_data = res
-        time.sleep(1)
+# if __name__ == "__main__":
+#     current_data = [
+#         {
+#             "depth": "41",
+#             "lag_depth": "131",
+#             "well_diam": "41",
+#         },
+#         {
+#             "camera1": {
+#                 "total_shlam_square": "13",
+#                 "total_shlam_volume": "51",
+#                 "average_speed": "34",
+#             },
+#             "camera2": {
+#                 "total_shlam_square": "13241",
+#                 "total_shlam_volume": "5143",
+#                 "average_speed": "1341",
+#             },
+#             "camera3": {
+#                 "total_shlam_square": "13241",
+#                 "total_shlam_volume": "5143",
+#                 "average_speed": "1341",
+#             }
+#         },
+#     ]
+#
+#     prev_data = None
+#     while True:
+#         res = result_process_data(prev_data, current_data)
+#         logger.info(res)
+#         prev_data = res
+#         time.sleep(1)

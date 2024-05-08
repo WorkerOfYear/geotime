@@ -1,7 +1,4 @@
-.PHONY: run clean down fix mig streem
-
-fix:
-	ruff check --fix .
+.PHONY: run clean down stop
 
 run:
 	docker system prune -af
@@ -15,14 +12,12 @@ down:
 	docker volume prune -af
 	docker network prune -f
 
+
+stop:
+	pm2 stop run.config.js
+
 clean:
 	docker system prune -af
 	docker volume prune -af
 	docker network prune -f
 
-mig:
-	alembic revision --autogenerate -m "migrate"
-	alembic upgrade head
-
-streem:
-	vlc -I dummy --loop test.mp4 :sout=#gather:rtp{sdp=rtsp://:8554/} :network-caching=500 :sout-all :sout-keepep

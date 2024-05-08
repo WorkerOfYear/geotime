@@ -1,0 +1,156 @@
+import os
+import cv2
+import json
+import time
+import numpy as np
+from cv2 import cuda
+
+from typing import List, Dict, Any
+
+cuda.printCudaDeviceInfo(0)
+cv2.cuda.setDevice(0)
+
+start_time = time.time()
+
+
+def select_points(event, x, y, flags, param):
+    if event == cv2.EVENT_LBUTTONDOWN:
+        points_list, image = param
+        points_list.append((x, y))
+        cv2.circle(image, (x, y), 4, (0, 0, 255), -1)
+        cv2.imshow("Image", image)
+
+
+def get_real_cm2(roi_vertices, seg_mask):
+    roi_vertices = np.array(roi_vertices)
+    x, y, w, h = cv2.boundingRect(roi_vertices)
+
+    known_roi_size_cm2 = 140.625
+    pixel_to_real_ratio = known_roi_size_cm2 / (w * h)
+    segmented_pixel_count = np.count_nonzero(seg_mask)
+    real_area_cm2 = segmented_pixel_count * pixel_to_real_ratio
+
+    return real_area_cm2, h
+
+
+def save_to_json(data: List[Dict[str, Any]], output_file: str) -> None:
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+
+    with open(output_file, 'w') as json_file:
+        json.dump(data, json_file, indent=2)
+
+
+def process_stream(stream_url: str, ):
+    cap = cv2.VideoCapture(stream_url)
+
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    codec_info = cap.get(cv2.CAP_PROP_FOURCC)
+
+    min_flow_magnitude = 2.0
+
+    lk_params = dict(
+        winSize=(10, 10),
+        maxLevel=1000,
+        criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03),
+    )
+    feature_params = dict(
+        maxCorners=200, qualityLevel=0.045, minDistance=7, blockSize=10
+    )
+    ret, first_frame = cap.read()
+    prev_gray = cv2.cvtColor(first_frame, cv2.COLOR_BGR2GRAY)
+    prev_gray_tracking = cv2.adaptiveThreshold(
+        prev_gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2
+    )
+    gpu_prev_gray = cv2.cuda_GpuMat()
+    gpu_prev_gray_tracking = cv2.cuda_GpuMat()
+    gpu_prev_gray.upload(prev_gray)
+    gpu_prev_gray_tracking.upload(prev_gray_tracking)
+
+    prev_points = cv2.goodFeaturesToTrack(prev_gray, mask=None, **feature_params)
+    mask = np.zeros_like(first_frame)
+    refresh_speed_counter = 0
+    refresh_rate = 30
+
+    roi_vertices = [(80, 308), (25, 598), (1073, 594), (991, 272)]
+    roi_vertices = np.array(roi_vertices, np.int32)
+    roi_vertices = roi_vertices.reshape((-1, 1, 2))
+
+    space_to_pixels = 0.074
+    speeds = []
+    abcd_hist = []
+
+    frame_counter = 0
+    while True:
+        ret, frame = cap.read()
+        if frame_counter % 5 == 0:
+            gray1 = gpu_prev_gray
+            gray1_tracking = gpu_prev_gray_tracking
+            gray2 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            gray2_tracking = cv2.adaptiveThreshold(gray2, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
+            gpu_gray2 = cv2.cuda_GpuMat()
+            gpu_gray2.upload(gray2)
+
+            gpu_flow = cv2.cuda_FarnebackOpticalFlow.create(5, 0.5, False, 15, 3, 5, 1.2, 0)
+            gpu_flow = gpu_flow.calc(gray1, gpu_gray2, None)
+            gpu_flow_x = cv2.cuda_GpuMat(gpu_flow.size(), cv2.CV_32FC1)
+            gpu_flow_y = cv2.cuda_GpuMat(gpu_flow.size(), cv2.CV_32FC1)
+
+            cv2.cuda.split(gpu_flow, [gpu_flow_x, gpu_flow_y])
+
+            magnitude, _ = cv2.cuda.cartToPolar(gpu_flow_x, gpu_flow_y)
+
+            threshold = 2
+            seg_mask = magnitude.download() > threshold
+
+            kernel = np.ones((5, 5), np.uint8)
+            seg_mask = cv2.morphologyEx(seg_mask.astype(np.uint8), cv2.MORPH_CLOSE, kernel)
+
+            masked_frame = frame.copy()
+            masked_frame[seg_mask == 0] = [0, 0, 0]
+
+            if refresh_speed_counter % refresh_rate == 0:
+                prev_points = cv2.goodFeaturesToTrack(gray2_tracking, mask=None, **feature_params)
+                mask = np.zeros_like(frame)
+
+
+            next_points, status, error = cv2.calcOpticalFlowPyrLK(gray1_tracking.download(), gray2_tracking,
+                                                                  prev_points, None, **lk_params)
+
+            good_new = next_points[status == 1]
+            good_old = prev_points[status == 1]
+
+            for i, (new, old) in enumerate(zip(good_new, good_old)):
+                a, b = new.ravel()
+                c, d = old.ravel()
+                a, b, c, d = int(a), int(b), int(c), int(d)
+
+                if cv2.pointPolygonTest(roi_vertices, (a, b), False) >= 0 and -5 < (c - a) < 1:
+                    abcd_hist.append((c, a, d, b))
+
+                    pixel_distance = np.sqrt((a - c) ** 2 + (b - d) ** 2)
+
+                    real_distance = pixel_distance * space_to_pixels
+                    time_elapsed = 1.0 / fps
+                    speed = real_distance / time_elapsed
+
+                    flow_vector = np.array([c - a, d - b], dtype=np.float32)
+                    flow_magnitude = np.linalg.norm(flow_vector)
+                    text = f"ID: {i}"
+
+                    if flow_magnitude > min_flow_magnitude and 3 <= speed <= 20:
+                        mask = cv2.line(mask, (a, b), (c, d), (0, 255, 0), 2)
+                        frame = cv2.circle(frame, (a, b), 5, (0, 0, 255), -1)
+                        cv2.putText(frame, text, (a + 10, b - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (255, 255, 255), 1,
+                                    cv2.LINE_AA)
+                        speeds.append(speed)
+
+
+                    frontend_frame = cv2.add(frame, mask)
+
+                    resolution = [1280, 720]
+                    frame = cv2.resize(masked_frame, resolution)
+                    _, buffer = cv2.imencode(".jpg", frame)
+                    yield (
+                            b"--frame\r\n"
+                            b"Content-Type: image/jpeg\r\n\r\n" + buffer.tobytes() + b"\r\n"
+                    )

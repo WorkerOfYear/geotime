@@ -2,7 +2,7 @@ import uvicorn
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src_websockets.routes import ws
+from routes import ws
 
 
 app = FastAPI(
@@ -23,7 +23,7 @@ app.add_middleware(
 if __name__ == "__main__":
     uvicorn.run(
         'src_websockets.main:app',
-        host="127.0.0.1",
+        host="0.0.0.0",
         port=8081,
         log_level='info',
     )

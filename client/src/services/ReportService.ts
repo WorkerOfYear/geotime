@@ -46,7 +46,7 @@ export const reportApi = createApi({
             const data = JSON.parse(event.data);
             console.log(data);
             updateCachedData((draft) => {
-              draft.push(data);
+              draft.unshift(data);
               dispatch(jobSlice.actions.addSavedReports(data))
             });
           };
@@ -78,7 +78,7 @@ export const reportApi = createApi({
             const data = JSON.parse(event.data);
             console.log(data);
             updateCachedData(draft => {
-              draft.push(JSON.stringify(data))
+              draft.unshift(JSON.stringify(data))
             });
           };
           ws.addEventListener("message", listener);

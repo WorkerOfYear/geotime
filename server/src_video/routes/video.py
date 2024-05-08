@@ -10,6 +10,7 @@ from fastapi.responses import StreamingResponse
 from loguru import logger
 
 from clients.camera import CameraClient
+from clients.seg_client import process_stream
 from clients.redis_manager import RedisManager
 
 router = APIRouter(
@@ -33,10 +34,9 @@ async def video_feed(camera_url: str):
 @router.get("/stream_detection")
 async def video_feed(camera_url: str):
     try:
-        camera_cli = CameraClient(rtsp_url=camera_url)
 
         return StreamingResponse(
-            camera_cli.stream_video(),
+            process_stream(camera_url),
             media_type="multipart/x-mixed-replace; boundary=frame",
         )
     except Exception as e:

@@ -20,7 +20,13 @@ async def add_work_data_camera(camera: Camera):
             camera_id = RedisManager().add_data('camera', 'add', camera.dict())
             return JSONResponse(status_code=200, content={"id": camera_id})
         else:
-            RedisManager().add_data('camera', 'update', camera.dict())
+            last_data = RedisManager().get_data(camera.dict()['id'])
+            final_data = camera.dict()
+            final_data['img_name'] = last_data['img_name']
+            final_data['total_shlam_square'] = last_data['total_shlam_square']
+
+            print(final_data)
+            RedisManager().add_data('camera', 'update', final_data)
             return JSONResponse(status_code=200, content=True)
     if camera.type[0] == "calibration":
         camera_info = camera.dict()
@@ -36,7 +42,6 @@ async def add_work_data_camera(camera: Camera):
             'detection': camera.detection.dict()
         }
         RedisManager().add_data('calib', 'add', data)
-        print(data)
         test_calibration.delay(data)
         return JSONResponse(status_code=200, content={
             'calibration_id': calibration_id
@@ -53,6 +58,7 @@ async def add_work_data_wits(calib: Calibration):
 
 @router.post("/wits", status_code=200)
 async def add_work_data_wits(wits: Wits):
+    print(wits.dict())
     wits_id = RedisManager().add_data('wits', 'add', wits.dict())
     return JSONResponse(status_code=200, content={"id": wits_id})
 

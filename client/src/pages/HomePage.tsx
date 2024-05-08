@@ -12,7 +12,7 @@ const HomePage: React.FC = () => {
   const jobReducer = useAppSelector((state) => state.jobReducer);
   const cameraReducer = useAppSelector((state) => state.cameraReducer);
   const reports = useAppSelector((state) => state.jobReducer.savedReports);
-  const last_report = reports?.at(-1);
+  const last_report = reports?.at(0);
 
   reportApi.useGetReportMessagesQuery(null, { skip: !jobReducer.jobState });
   const isActiveCamera =

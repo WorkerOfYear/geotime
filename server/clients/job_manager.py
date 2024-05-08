@@ -1,5 +1,3 @@
-from typing import List
-
 from src.tasks.tasks import consume_flow_of_frames
 from celery import group
 from src.utils.singleton import singleton
@@ -10,7 +8,7 @@ from clients.redis_manager import RedisManager
 @singleton
 class JobManager:
     @staticmethod
-    def get_active_cameras(job: JobSchema) -> List:
+    def get_active_cameras(job: JobSchema):
         cameras = []
 
         content = {
@@ -37,7 +35,7 @@ class JobManager:
         return cameras
 
     @staticmethod
-    def create_jobs(cameras: list[dict]) -> List:
+    def create_jobs(cameras):
         jobs = []
         for camera in cameras:
             if camera['number'] == '1':
@@ -67,14 +65,14 @@ class JobManager:
         return jobs
 
     @staticmethod
-    def check_status_job(job: dict) -> bool:
+    def check_status_job(job: dict):
         job_content = RedisManager().get_data(job['id'])['data']
         if job_content['status']:
             return True
         else:
             return False
 
-    def create_new_jobs(self, job: JobSchema) -> List[dict] | None:
+    def create_new_jobs(self, job: JobSchema):
         cameras = self.get_active_cameras(job)
 
         if cameras:

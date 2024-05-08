@@ -20,11 +20,10 @@ async def websocket_wits_feed(websocket: WebSocket):
     try:
         rabbit_queue = AsyncRabbitQueue()
         await rabbit_queue.initialize()
-        agen = rabbit_queue.check_queue('wits')
-        
-        while websocket.client_state == WebSocketState.CONNECTED:
-            message = await anext(agen)
-            logger.debug(message)
+        async for message in rabbit_queue.check_queue('wits'):
+            if websocket.client_state != WebSocketState.CONNECTED:
+                break  # Exit the loop if websocket is not connected
+
             if message:
                 await websocket.send_json(message)
 
@@ -39,14 +38,18 @@ async def websocket_data(websocket: WebSocket):
         rabbit_queue = AsyncRabbitQueue()
         await rabbit_queue.initialize()
 
+        cameras_dict = {}
         prev_data = None
-        agen = rabbit_queue.check_queue("result_cameras")
-        
-        while websocket.client_state == WebSocketState.CONNECTED:
-            message = await anext(agen)
+        async for message in rabbit_queue.check_queue("result_cameras"):
+            if websocket.client_state != WebSocketState.CONNECTED:
+                break  # Exit the loop if websocket is not connected
+
             if message:
+                camera_id: str = message["job_id"]
+                cameras_dict[camera_id] = message[camera_id]
+                logger.info(cameras_dict)
                 wits_data = WitsClient().get_data('last')
-                current_data = [wits_data, message]
+                current_data = [wits_data, cameras_dict]
                 res_data = result_process_data(prev_data, current_data)
                 res_data['job_id'] = message['job_id']
                 prev_data = res_data
@@ -56,5 +59,3 @@ async def websocket_data(websocket: WebSocket):
 
     except WebSocketDisconnect:
         logger.info("WebSocket disconnect")
-
-

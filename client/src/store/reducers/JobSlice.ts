@@ -27,7 +27,7 @@ export const jobSlice = createSlice({
   initialState,
   reducers: {
     addSavedReports(state, action: PayloadAction<IReport>) {
-      state.savedReports.push(action.payload)
+      state.savedReports.unshift(action.payload)
     },
     setJobState(state, action: PayloadAction<boolean>) {
       state.jobState = action.payload;

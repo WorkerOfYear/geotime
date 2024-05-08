@@ -35,8 +35,8 @@ def get_real_cm2(roi_vertices, seg_mask):
 
 
 def process_stream(fps, frames, min_flow_magnitude, lk_params, prev_points, mask, refresh_speed_counter, fps_counter,
-                   refresh_rate, roi_vertices, gpu_prev_gray, gpu_prev_gray_tracking, feature_params, area_cm2_list, v_liters):
-
+                   refresh_rate, roi_vertices, gpu_prev_gray, gpu_prev_gray_tracking, feature_params, area_cm2_list,
+                   v_liters):
     roi_vertices = np.array(roi_vertices, np.int32)
     roi_vertices = roi_vertices.reshape((-1, 1, 2))
 
@@ -135,6 +135,7 @@ def process_stream(fps, frames, min_flow_magnitude, lk_params, prev_points, mask
                             cv2.LINE_AA,
                         )
                         speeds.append(speed)
+                    frontend_frame = cv2.add(frame, mask)
 
             average_speed = np.mean(speeds)
             if len(speeds) > 0:
