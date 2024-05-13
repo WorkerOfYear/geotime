@@ -298,7 +298,6 @@ def process_stream(fps, frames, min_flow_magnitude, lk_params, prev_points, mask
                 real_area_cm2, h = get_real_cm2(roi_vertices, seg_mask)
                 real_h = h * space_to_pixels
                 if fps_counter == 0 or fps_counter % round(fps * (real_h / average_speed)) == 0:
-                    print("huy")
                     area_cm2_list.append(real_area_cm2)
                     v_liters.append(real_area_cm2 * h_estimated_cm / 1000)
 
@@ -524,16 +523,17 @@ def consume_flow_of_frames(self, job_id: str, stream_url: str):
                                                  refresh_speed_counter, fps_counter, refresh_rate, roi_vertices,
                                                  gpu_prev_gray,
                                                  gpu_prev_gray_tracking, feature_params, area_cm2_list, v_liters,
-                                                 camera['data']['volume'], camera['data']['sensitivity'], camera['total_shlam_square'])
+                                                 camera['data']['volume'], camera['data']['sensitivity'],
+                                                 camera['total_shlam_square'])
 
                         for result in results['results']:
                             content = {
                                 job_id: result,
                                 "job_id": job_id
                             }
-                            print(content)
+                            # print(content)
                             rabbit_queue.add_message_queue(
-                                "result_cameras", "result_cameras", content
+                                f"camera_{job_id}", f"camera_{job_id}", content
                             )
                         frames = []
                         fps_counter = results['fps_counter']
