@@ -6,7 +6,7 @@ import styles from "./Table.module.scss";
 import Video from "../Video";
 import DetectionVideo from "../Video/DetectionVideo";
 import { IReport } from "../../types/IReport";
-import { formatDate } from "../../utils/reports";
+import { chooseFactVolume, formatDate } from "../../utils/reports";
 
 const override: CSSProperties = {
   marginTop: "5em",
@@ -15,39 +15,20 @@ const override: CSSProperties = {
 type TablesProps = {
   id: number;
   reports?: IReport[];
-  showStream?: boolean;
   cameraUrl?: string;
+  showStream?: boolean;
   classBody?: string;
   isFetching?: boolean;
 };
 
-const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, classBody, isFetching }) => {
-  let errorText;
-  if (id === 1) {
-    errorText = "Видео с вибросито 1";
-  } else if (id === 2) {
-    errorText = "Видео с вибросито 2";
-  } else if (id === 3) {
-    errorText = "Видео с вибросито 3";
-  }
-
-  const chooseFactVolome = (item: IReport) => {
-    if (id === 1) {
-      return item.cut_fact_volume_1;
-    } else if (id === 2) {
-      return item.cut_fact_volume_2;
-    } else if (id === 3) {
-      return item.cut_fact_volume_3;
-    }
-  };
-
+const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, classBody, isFetching }) => {  
   return (
     <div className={styles.table}>
       <div className={styles.table__content}>
         {showStream && (
           <div className={styles.table__video}>
-            <Video errorText={errorText} cameraUrl={cameraUrl} showVideo={showStream} />
-            <DetectionVideo errorText={errorText} cameraUrl={cameraUrl} showVideo={showStream} />
+            <Video errorText={`Видео с камеры №${id}`} cameraUrl={cameraUrl} />
+            <DetectionVideo errorText={`Видео с камеры №${id}`} cameraUrl={cameraUrl} />
           </div>
         )}
         {isFetching && (
@@ -69,7 +50,7 @@ const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, cla
               <div className={styles.item}>{item.well_diam}</div>
               <div className={styles.item}>{item.cut_plan_volume}</div>
               <div className={styles.item}>{item.cut_plan_volume_with_out_well}</div>
-              <div className={styles.item}>{chooseFactVolome(item)}</div>
+              <div className={styles.item}>{chooseFactVolume(id, item)}</div>
               <div className={styles.item}>{item.cleaning_factor}</div>
             </div>
           ))}

@@ -4,7 +4,7 @@ import { IReport } from "../../types/IReport";
 import { formatDate } from "../../utils/reports";
 
 interface ResultProps {
-  report?: IReport;
+  report?: IReport | null;
 }
 
 const Result = ({ report }: ResultProps) => {

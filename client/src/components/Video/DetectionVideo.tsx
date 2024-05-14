@@ -10,7 +10,7 @@ type Props = {
   showVideo?: boolean;
 };
 
-const DetectionVideo = ({ className, cameraUrl, errorText, showVideo }: Props) => {
+const DetectionVideo = ({ className, cameraUrl, errorText, showVideo = true }: Props) => {
   const [loadError, setLoadError] = useState(false);
 
   return (
@@ -18,11 +18,15 @@ const DetectionVideo = ({ className, cameraUrl, errorText, showVideo }: Props) =
       <div className={clsx(className, styles.video)}>
         {showVideo ? (
           loadError ? (
-            <p>Камера {cameraUrl} не подключена</p>
+            <p>Ошибка при работе камеры - {cameraUrl}</p>
           ) : (
             <img
-              src={String(import.meta.env.VITE_DETECTION_STREAM_ENDPOINT) + String(cameraUrl)}
-              onError={(error) => setLoadError(true)}
+              src={
+                String(import.meta.env.VITE_BASE_VIDEO_URL) +
+                String(import.meta.env.VITE_DETECTION_STREAM_ENDPOINT) +
+                String(cameraUrl)
+              }
+              onError={() => setLoadError(true)}
               alt=""
             />
           )

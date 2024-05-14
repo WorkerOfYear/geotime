@@ -1,3 +1,5 @@
+import { IReport } from "../types/IReport";
+
 export function formatDate(inputTime: string) {
   const dateTimeParts = inputTime.split(" ");
   const dateParts = dateTimeParts[0].split("-");
@@ -11,4 +13,14 @@ export function formatDate(inputTime: string) {
   const seconds = Math.floor(parseFloat(timeParts[2])).toString(); // Округляем до целого числа
 
   return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+}
+
+export function chooseFactVolume(id: number, item: IReport) {
+  if (id === 1) {
+    return item.cut_fact_volume_1;
+  } else if (id === 2) {
+    return item.cut_fact_volume_2;
+  } else if (id === 3) {
+    return item.cut_fact_volume_3;
+  }
 }

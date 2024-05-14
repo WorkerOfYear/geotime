@@ -4,11 +4,12 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { getWitsData } from "../store/reducers/actions/ActionCreators";
 import { witsSlice } from "../store/reducers/WitsSlice";
-import { jobSocket, witsSocket } from "../services/ReportService";
+import { closeSockets, witsSocket } from "../services/ReportService";
 
 type Props = {
   children?: ReactNode;
 };
+
 const MainLayout = ({ children }: Props) => {
   const dispatch = useAppDispatch();
   const jobReducer = useAppSelector((state) => state.jobReducer);
@@ -18,14 +19,14 @@ const MainLayout = ({ children }: Props) => {
   useEffect(() => {
     const handleUnload = () => {
       console.log("unload")
-      // if (!jobReducer.jobState && jobSocket && (jobSocket.readyState === jobSocket.CONNECTING || jobSocket.readyState === jobSocket.OPEN)) {
-      //   console.log("closing socket")
-      //   jobSocket.close()
-      // }
-      // if (!witsReducer.stream && witsSocket && (witsSocket.readyState === witsSocket.CONNECTING || witsSocket.readyState === witsSocket.OPEN)) {
-      //   console.log("closing socket")
-      //   witsSocket.close()
-      // }
+      if (!jobReducer.jobState) {
+        console.log("closing socket")
+        closeSockets()
+      }
+      if (!witsReducer.stream && witsSocket && (witsSocket.readyState === witsSocket.CONNECTING || witsSocket.readyState === witsSocket.OPEN)) {
+        console.log("closing socket")
+        witsSocket.close()
+      }
     };
     window.addEventListener("unload", handleUnload);
     return () => {
@@ -34,9 +35,9 @@ const MainLayout = ({ children }: Props) => {
   }, []);
   
   useEffect(() => {
-    if (!jobReducer.jobState && jobSocket && (jobSocket.readyState === jobSocket.CONNECTING || jobSocket.readyState === jobSocket.OPEN)) {
+    if (!jobReducer.jobState) {
       console.log("closing socket")
-      jobSocket.close()
+      closeSockets()
     }
     if (!witsReducer.stream && witsSocket && (witsSocket.readyState === witsSocket.CONNECTING || witsSocket.readyState === witsSocket.OPEN)) {
       console.log("closing socket")
