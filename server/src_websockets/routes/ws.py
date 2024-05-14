@@ -54,10 +54,9 @@ async def websocket_data(camera_id: int, websocket: WebSocket):
                 res_data['job_id'] = message['job_id']
                 prev_data = res_data
 
-                logger.debug(res_data)
                 json_file = open(f"result_camera_{camera_id}.json", "w")
                 json.dump(res_data, json_file, indent=6)
-                # await rabbit_queue.add_message_queue("report", "report", json.dumps(res_data))
+
                 await websocket.send_json(res_data)
 
     except WebSocketDisconnect:
@@ -68,22 +67,37 @@ async def websocket_data(camera_id: int, websocket: WebSocket):
 async def websocket_data(websocket: WebSocket):
     await websocket.accept()
     try:
-        previous_data = {}
+        rabbit_queue = AsyncRabbitQueue()
+        await rabbit_queue.initialize()
+
         file_names = ['result_camera_1.json', 'result_camera_2.json', 'result_camera_3.json']
+        var_names = ["camera_1", "camera_2", "camera_3"]
+        saved_data = {}
+        prev_data = None
         while True:
             if websocket.client_state != WebSocketState.CONNECTED:
                 break  # Exit the loop if websocket is not connected
 
-            for file_name in file_names:
+            for index, file_name in enumerate(file_names):
                 with open(file_name, mode='a+') as file:
-                    current_data = json.loads(file.read())
+                    file.seek(0)
+                    try:
+                        current_data = json.loads(file.read())
+                    except json.JSONDecodeError:
+                        current_data = None
 
-                    # if current_data != previous_data.get(file_name):
-                    #     await calculate(*current_data.values())
+                    if current_data:
+                        var_name = var_names[index]
+                        saved_data[var_name] = current_data
 
-                    logger.debug(current_data)
-                    previous_data[file_name] = current_data
+            wits_data = WitsClient().get_data('last')
+            current_data = [wits_data, saved_data]
+            logger.debug(current_data)
+            res_data = result_process_data(prev_data, current_data)
+            prev_data = res_data
 
+            await rabbit_queue.add_message_queue("report", "report", json.dumps(res_data))
+            await websocket.send_json(res_data)
             await asyncio.sleep(1)
 
     except WebSocketDisconnect:
