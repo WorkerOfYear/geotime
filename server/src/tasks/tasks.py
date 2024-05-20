@@ -533,7 +533,7 @@ def consume_flow_of_frames(self, job_id: str, stream_url: str):
                             }
                             # print(content)
                             rabbit_queue.add_message_queue(
-                                f"camera_{job_id}", f"camera_{job_id}", content
+                                f"{job_id}", f"{job_id}", content
                             )
                         frames = []
                         fps_counter = results['fps_counter']

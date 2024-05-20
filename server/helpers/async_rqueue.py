@@ -6,8 +6,10 @@ import aio_pika as apika
 import asyncio
 
 from loguru import logger
-from src.config.config import RabbitConfig
+from typing import Optional
+from aio_pika.abc import AbstractIncomingMessage
 
+from src.config.config import RabbitConfig
 
 class AsyncRabbitQueue:
     def __init__(self) -> None:
@@ -46,6 +48,15 @@ class AsyncRabbitQueue:
             message_queue = json.dumps(message_queue)
 
         await self.channel.default_exchange.publish(message=apika.Message(body=message_queue.encode()), routing_key=key)
+
+    async def get_single_message(self, name_queue: str) -> Optional[dict]:
+        queue = await self.start_connection_queue(name_queue)
+        incoming_message: Optional[AbstractIncomingMessage] = await queue.get(
+            timeout=1, fail=False
+        )
+        if incoming_message:
+            await incoming_message.ack()
+            return json.loads(incoming_message.body.decode())
 
     async def check_queue(self, name_queue: str) -> list[dict] | None:
         queue = await self.start_connection_queue(name_queue)
