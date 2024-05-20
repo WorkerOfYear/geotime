@@ -58,6 +58,11 @@ class AsyncRabbitQueue:
             await incoming_message.ack()
             return json.loads(incoming_message.body.decode())
 
+    async def purge_queues(self, queues_list: list[str]):
+        for queue_name in queues_list:
+            queue = await self.start_connection_queue(queue_name)
+            await queue.purge()
+
     async def check_queue(self, name_queue: str) -> list[dict] | None:
         queue = await self.start_connection_queue(name_queue)
         queue_messages = []

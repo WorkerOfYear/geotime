@@ -62,6 +62,7 @@ async def websocket_camera_data(camera1: bool, camera2: bool, camera3: bool, web
 
             wits_data = WitsClient().get_data('last')
             current_data = [wits_data, cameras_dict]
+            logger.debug(current_data)
             res_data = result_process_data(prev_data, current_data)
             res_data['job_id'] = "res_data"
             prev_data = res_data

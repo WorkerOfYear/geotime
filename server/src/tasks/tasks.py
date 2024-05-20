@@ -532,6 +532,7 @@ def consume_flow_of_frames(self, job_id: str, stream_url: str):
                                 "job_id": job_id
                             }
                             # print(content)
+                            time.sleep(1)
                             rabbit_queue.add_message_queue(
                                 f"{job_id}", f"{job_id}", content
                             )

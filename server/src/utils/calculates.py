@@ -19,38 +19,22 @@ def predict_data(chunks1):
 def result_process_data(prev_data: dict, current_data: list) -> dict:
     wits_data = current_data[0]
     cameras_dict = current_data[1]
-    cameras = []
-    if "camera1" in cameras_dict:
-        camera1_data = cameras_dict["camera1"]
-        cameras.append(camera1_data)
-
-    if "camera2" in cameras_dict:
-        camera2_data = cameras_dict["camera2"]
-        cameras.append(camera2_data)
-
-    if "camera3" in cameras_dict:
-        camera3_data = cameras_dict["camera3"]
-        cameras.append(camera3_data)
-
-    n_cameras = len(cameras)
 
     if prev_data:
         prev_depth = prev_data["depth"]
         prev_lag_depth = prev_data["lag_depth"]
         prev_cut_plan_volume = prev_data["cut_plan_volume"]
         prev_cut_plan_volume_with_out_well = prev_data["cut_plan_volume_with_out_well"]
-
-        prev_cut_fact_volume_list = []
-        prev_cut_fact_volume_list.append(prev_data["cut_fact_volume_1"])
-        prev_cut_fact_volume_list.append(prev_data["cut_fact_volume_2"])
-        prev_cut_fact_volume_list.append(prev_data["cut_fact_volume_3"])
-
+        prev_cut_fact_volume_dict = {}
+        prev_cut_fact_volume_dict["cut_fact_volume_1"] = prev_data["cut_fact_volume_1"]
+        prev_cut_fact_volume_dict["cut_fact_volume_2"] = prev_data["cut_fact_volume_2"]
+        prev_cut_fact_volume_dict["cut_fact_volume_3"] = prev_data["cut_fact_volume_3"]
     else:
         prev_depth = 0
         prev_lag_depth = 0
         prev_cut_plan_volume = 0
         prev_cut_plan_volume_with_out_well = 0
-        prev_cut_fact_volume_list = [0, 0, 0]
+        prev_cut_fact_volume_dict = {"cut_fact_volume_1": 0, "cut_fact_volume_2": 0, "cut_fact_volume_3": 0}
 
     depth = wits_data["depth"]  # Глубина забоя текущая, м
     lag_depth = wits_data["lag_depth"]  # Глубина выхода шлама, м
@@ -69,39 +53,37 @@ def result_process_data(prev_data: dict, current_data: list) -> dict:
         cpv=cut_plan_volume, cpvwow=cut_plan_volume_with_out_well
     )
 
-    cut_fact_volume_list = []
-    for i in range(n_cameras):
-        total_shlam_volume = cameras[i]["total_shlam_volume"]
-        prev_cut_fact_volume = prev_cut_fact_volume_list[i]
+    if "camera1" in cameras_dict:
+        logger.debug(prev_cut_fact_volume_dict["cut_fact_volume_1"])
+        logger.debug(cameras_dict["camera1"]["total_shlam_volume"])
 
-        cut_fact_volume = values.CutFactVolume.process_value(
-            cfv0=prev_cut_fact_volume, cfvd=total_shlam_volume
+        cut_fact_volume_1 = values.CutFactVolume.process_value(
+            cfv0=prev_cut_fact_volume_dict["cut_fact_volume_1"],
+            cfvd=cameras_dict["camera1"]["total_shlam_volume"]
         )
-        cut_fact_volume_list.append(float(cut_fact_volume))
+    else:
+        cut_fact_volume_1 = 0
 
-    cut_fact_volume_sum = sum(cut_fact_volume_list)
+    if "camera2" in cameras_dict:
+        cut_fact_volume_2 = values.CutFactVolume.process_value(
+            cfv0=prev_cut_fact_volume_dict["cut_fact_volume_2"],
+            cfvd=cameras_dict["camera2"]["total_shlam_volume"]
+        )
+    else:
+        cut_fact_volume_2 = 0
 
+    if "camera3" in cameras_dict:
+        cut_fact_volume_3 = values.CutFactVolume.process_value(
+            cfv0=prev_cut_fact_volume_dict["cut_fact_volume_3"],
+            cfvd=cameras_dict["camera3"]["total_shlam_volume"]
+        )
+    else:
+        cut_fact_volume_3 = 0
+
+    cut_fact_volume_sum = cut_fact_volume_1 + cut_fact_volume_2 + cut_fact_volume_3
     cleaning_factor = values.CleaningFactor.process_value(
         cpv=cut_plan_volume, cfvs=cut_fact_volume_sum
     )
-
-    if n_cameras == 1:
-        cut_fact_volume_1 = cut_fact_volume_list[0]
-        cut_fact_volume_2 = 0
-        cut_fact_volume_3 = 0
-    elif n_cameras == 2:
-        cut_fact_volume_1 = cut_fact_volume_list[0]
-        cut_fact_volume_2 = cut_fact_volume_list[1]
-        cut_fact_volume_3 = 0
-    elif n_cameras == 3:
-        cut_fact_volume_1 = cut_fact_volume_list[0]
-        cut_fact_volume_2 = cut_fact_volume_list[1]
-        cut_fact_volume_3 = cut_fact_volume_list[2]
-    else:
-        cut_fact_volume_1 = 0
-        cut_fact_volume_2 = 0
-        cut_fact_volume_3 = 0
-
     res = {
         "time": str(datetime.now()),
         "depth": round(float(depth), 2),
@@ -116,7 +98,6 @@ def result_process_data(prev_data: dict, current_data: list) -> dict:
         "cut_fact_volume": round(float(cut_fact_volume_sum), 2),
         "cleaning_factor": round(float(cleaning_factor), 5),
     }
-
     return res
 
 # if __name__ == "__main__":
