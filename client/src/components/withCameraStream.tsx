@@ -20,15 +20,26 @@ type InjectedProps = {
 
 const withCameraStream =
   (Component: React.ComponentType<BaseProps & InjectedProps>) => (props: BaseProps) => {
-    const jobState = useAppSelector((state) => state.jobReducer.jobState);
-    const reports = useAppSelector((state) => selectCameraReports(props.id, state));
-    reportApi.useGetReportMessagesQuery(props.id, { skip: !jobState });
+    const jobReducer = useAppSelector((state) => state.jobReducer);
+    const reports = useAppSelector((state) => selectCameraReports(1, state));
+    reportApi.useGetReportMessagesQuery(
+      {
+        camera_1: jobReducer.job.camera1_is_active,
+        camera_2: jobReducer.job.camera2_is_active,
+        camera_3: jobReducer.job.camera3_is_active,
+      },
+      { skip: !jobReducer.jobState }
+    );
 
     const [isFetching, setIsFetching] = useState(false);
 
     useEffect(() => {
-      if (jobState && reports?.length === 0) setIsFetching(true);
-    }, [jobState]);
+      if (jobReducer.jobState && reports?.length === 0) {
+        setIsFetching(true);
+      } else {
+        setIsFetching(false);
+      }
+    }, [jobReducer.jobState, reports]);
 
     return <Component {...props} reports={reports} isFetching={isFetching} />;
   };

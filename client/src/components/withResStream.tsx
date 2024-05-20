@@ -10,9 +10,10 @@ type InjectedProps = {
 };
 
 const withResStream = (Component: React.ComponentType<InjectedProps>) => () => {
-  const jobState = useAppSelector((state) => state.jobReducer.jobState);
+  // const jobState = useAppSelector((state) => state.jobReducer.jobState);
+  // reportApi.useGetResReportMessagesQuery(null, { skip: !jobState });
+  
   const report = useAppSelector((state) => state.jobReducer.savedResReport);
-  reportApi.useGetResReportMessagesQuery(null, { skip: !jobState });
 
   return <Component report={report} />;
 };

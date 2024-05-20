@@ -6,26 +6,34 @@ import { witsSlice } from "../store/reducers/WitsSlice";
 import { stopJob } from "../store/reducers/actions/ActionCreators";
 
 export let camera1Socket: WebSocket;
-export let camera2Socket: WebSocket;
-export let camera3Socket: WebSocket;
-function getCameraSocket(camera_id: number) {
-  switch (camera_id) {
-    case 1:
-      camera1Socket = new WebSocket(
-        String(import.meta.env.VITE_BASE_WS_URL) + String(import.meta.env.VITE_WS_CAMERA_DATA) + "1"
-      );
-      return camera1Socket;
-    case 2:
-      camera2Socket = new WebSocket(
-        String(import.meta.env.VITE_BASE_WS_URL) + String(import.meta.env.VITE_WS_CAMERA_DATA) + "2"
-      );
-      return camera2Socket;
-    case 3:
-      camera3Socket = new WebSocket(
-        String(import.meta.env.VITE_BASE_WS_URL) + String(import.meta.env.VITE_WS_CAMERA_DATA) + "3"
-      );
-      return camera3Socket;
-  }
+// export let camera2Socket: WebSocket;
+// export let camera3Socket: WebSocket;
+
+function getCameraSocket(cameras_status: { camera_1: boolean; camera_2: boolean; camera_3: boolean }) {
+  // switch (camera_id) {
+  //   case 1:
+  //     camera1Socket = new WebSocket(
+  //       String(import.meta.env.VITE_BASE_WS_URL) + String(import.meta.env.VITE_WS_CAMERA_DATA) + "1"
+  //     );
+  //     return camera1Socket;
+  //   case 2:
+  //     camera2Socket = new WebSocket(
+  //       String(import.meta.env.VITE_BASE_WS_URL) + String(import.meta.env.VITE_WS_CAMERA_DATA) + "2"
+  //     );
+  //     return camera2Socket;
+  //   case 3:
+  //     camera3Socket = new WebSocket(
+  //       String(import.meta.env.VITE_BASE_WS_URL) + String(import.meta.env.VITE_WS_CAMERA_DATA) + "3"
+  //     );
+  //     return camera3Socket;
+  // }
+
+  camera1Socket = new WebSocket(
+    String(import.meta.env.VITE_BASE_WS_URL) +
+      String(import.meta.env.VITE_WS_CAMERA_DATA) +
+      `?camera1=${cameras_status.camera_1}&camera2=${cameras_status.camera_2}&camera3=${cameras_status.camera_3}`
+  );
+  return camera1Socket;
 }
 
 export let resSocket: WebSocket;
@@ -38,8 +46,8 @@ function getResSocket() {
 
 export function closeSockets() {
   if (camera1Socket && camera1Socket.readyState === camera1Socket.OPEN) camera1Socket.close();
-  if (camera2Socket && camera2Socket.readyState === camera2Socket.OPEN) camera2Socket.close();
-  if (camera3Socket && camera3Socket.readyState === camera3Socket.OPEN) camera3Socket.close();
+  // if (camera2Socket && camera2Socket.readyState === camera2Socket.OPEN) camera2Socket.close();
+  // if (camera3Socket && camera3Socket.readyState === camera3Socket.OPEN) camera3Socket.close();
   if (resSocket && resSocket.readyState === resSocket.OPEN) resSocket.close();
 }
 
@@ -55,10 +63,13 @@ export const reportApi = createApi({
   reducerPath: "reportApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/" }),
   endpoints: (builder) => ({
-    getReportMessages: builder.query<IReport[], number>({
+    getReportMessages: builder.query<IReport[], { camera_1: boolean; camera_2: boolean; camera_3: boolean }>({
       queryFn: () => ({ data: [] }),
-      async onCacheEntryAdded(id, { updateCachedData, cacheDataLoaded, cacheEntryRemoved, dispatch }) {
-        const ws = getCameraSocket(id);
+      async onCacheEntryAdded(
+        cameras_status,
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved, dispatch }
+      ) {
+        const ws = getCameraSocket(cameras_status);
         if (!ws) return;
 
         let listener: any;
@@ -75,7 +86,8 @@ export const reportApi = createApi({
             console.log(data);
             updateCachedData((draft) => {
               draft.unshift(data);
-              dispatch(jobSlice.actions.addCameraReports({ id: id, report: data }));
+              dispatch(jobSlice.actions.addCameraReports({ id: 1, report: data }));
+              dispatch(jobSlice.actions.addResReport(data));
             });
           };
           ws.addEventListener("message", listener);
@@ -104,7 +116,6 @@ export const reportApi = createApi({
             console.log(data);
             updateCachedData((draft) => {
               draft.unshift(data);
-              dispatch(jobSlice.actions.addResReport(data));
             });
           };
           ws.addEventListener("message", listener);
