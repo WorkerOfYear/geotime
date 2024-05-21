@@ -20,6 +20,8 @@ async def websocket_wits_feed(websocket: WebSocket):
     try:
         rabbit_queue = AsyncRabbitQueue()
         await rabbit_queue.initialize()
+        await rabbit_queue.purge_queues(["wits"])
+
         async for message in rabbit_queue.check_queue('wits'):
             if websocket.client_state != WebSocketState.CONNECTED:
                 break  # Exit the loop if websocket is not connected

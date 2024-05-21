@@ -53,7 +53,7 @@ class WitsClient:
                 result.update(item)
 
         logger.info(f"Wits data - {result}")
-        return {'depth': '1182.61', 'lag_depth': '1183.71', 'well_diam': '256.6'}  # Mock data
+        return result
 
     def get_stream(self, tn: Telnet, value_keys: dict):
         rabbit_queue = RabbitQueue()
@@ -67,7 +67,7 @@ class WitsClient:
                 for item in all_params:
                     if item:
                         result.update(item)
-                rabbit_queue.add_message_queue("wits", "wits", json.dumps({'depth': '1182.61', 'lag_depth': '1183.71', 'well_diam': '256.6'}))  # Mock data
+                rabbit_queue.add_message_queue("wits", "wits", json.dumps(result))
                 logger.info(f"Wits data send queue - {result}")
                 all_params = []
 
