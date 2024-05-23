@@ -6,7 +6,7 @@ import styles from "./Table.module.scss";
 import Video from "../Video";
 import DetectionVideo from "../Video/DetectionVideo";
 import { IReport } from "../../types/IReport";
-import { chooseFactVolume, formatDate } from "../../utils/reports";
+import { chooseFactVolume, formatDate, chooseFactVolumeDelta } from "../../utils/reports";
 
 const override: CSSProperties = {
   marginTop: "5em",
@@ -21,7 +21,7 @@ type TablesProps = {
   isFetching?: boolean;
 };
 
-const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, classBody, isFetching }) => {  
+const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, classBody, isFetching }) => {
   return (
     <div className={styles.table}>
       <div className={styles.table__content}>
@@ -49,7 +49,7 @@ const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, cla
               <div className={styles.item}>{item.lag_depth}</div>
               <div className={styles.item}>{item.well_diam}</div>
               <div className={styles.item}>{item.cut_plan_volume}</div>
-              <div className={styles.item}>{item.cut_plan_volume_with_out_well}</div>
+              <div className={styles.item}>{chooseFactVolumeDelta(id, item)}</div>
               <div className={styles.item}>{chooseFactVolume(id, item)}</div>
               <div className={styles.item}>{item.cleaning_factor}</div>
             </div>

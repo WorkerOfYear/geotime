@@ -76,7 +76,7 @@ const History = () => {
             <HeadTable className={"history__table-head"} />
             <div className="history__body">
                  <Tables
-                    id={1}
+                    id={4}
                     reports={reports}
                     showStream={false}
                     classBody={"history__table-body"}

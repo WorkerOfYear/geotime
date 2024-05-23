@@ -8,6 +8,9 @@ export interface IReport {
   cut_plan_volume: string;
   cut_plan_volume_with_out_well: string;
   cut_plan_volume_in_well: string;
+  сut_fact_volume_delta_1: string;
+  сut_fact_volume_delta_2: string;
+  сut_fact_volume_delta_3: string;
   cut_fact_volume_1: string;
   cut_fact_volume_2: string;
   cut_fact_volume_3: string;
