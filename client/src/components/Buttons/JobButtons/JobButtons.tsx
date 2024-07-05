@@ -3,7 +3,7 @@ import React from "react";
 import ButtonAccent from "../ButtonAccent";
 import Button from "../Button";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
-import { startJob } from "../../../store/reducers/actions/ActionCreators";
+import { startJob, stopJob } from "../../../store/reducers/actions/ActionCreators";
 import { closeSockets, reportApi } from "../../../services/ReportService";
 
 const JobButtons: React.FC = () => {
@@ -17,6 +17,7 @@ const JobButtons: React.FC = () => {
 
   const handleStopOnClick = () => {
     closeSockets()
+    dispatch(stopJob(jobReducer.job));
   };
 
   return (

@@ -31,10 +31,10 @@ async def video_feed(camera_url: str):
         logger.error(e)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+
 @router.get("/stream_detection")
 async def video_feed(camera_url: str):
     try:
-
         return StreamingResponse(
             process_stream(camera_url),
             media_type="multipart/x-mixed-replace; boundary=frame",
@@ -43,19 +43,23 @@ async def video_feed(camera_url: str):
         logger.error(e)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+
 @router.get("/first_img")
 async def video_feed(request: Request, camera_url: str):
     cap = cv2.VideoCapture(camera_url)
     ret, first_frame = cap.read()
 
     static_dir = "static"
-    image_path = os.path.join(static_dir, 'camera_url_img.png')
-    cv2.imwrite(image_path, first_frame)
+    absolute_dir = os.path.join(os.getcwd(), "src_video", static_dir)
+    image_path = os.path.join(absolute_dir, 'camera_url_img.png')
+    frame = cv2.resize(first_frame, [452, 230])
+    cv2.imwrite(image_path, frame)
 
     camera_id = str(uuid.uuid4())
+
     result = {
         "camera_id": camera_id,
-        "image_url": f"{request.base_url}{image_path}",
+        "image_url": f"{request.base_url}{os.path.join(static_dir, 'camera_url_img.png')}",
     }
     RedisManager().add_data('camers', 'add', result)
     return result

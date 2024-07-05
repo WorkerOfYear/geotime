@@ -5,7 +5,7 @@ from loguru import logger
 class CameraClient:
     def __init__(self, rtsp_url, resolution=None):
         self.rtsp_url = rtsp_url
-        self.resolution = [1024, 720]
+        self.resolution = [452, 230]
 
     async def stream_video(self):
         cap = cv2.VideoCapture(self.rtsp_url)

@@ -74,14 +74,13 @@ class JobManager:
 
     def create_new_jobs(self, job: JobSchema):
         cameras = self.get_active_cameras(job)
-
         if cameras:
             jobs = self.create_jobs(cameras)
             if jobs:
                 tasks = []
                 for job in jobs:
                     camera = RedisManager().get_data(job['camera_id'])
-                    if camera:
+                    if camera and job["status"]:
                         tasks.append(consume_flow_of_frames.s(job['id'], camera['data']['url']))
 
                 task_group = group(tasks)

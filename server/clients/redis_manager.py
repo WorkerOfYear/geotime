@@ -44,6 +44,10 @@ class RedisManager:
             self.set_info(data['calibration_id'], data)
             self.client.persist(data['calibration_id'])
 
+        if type_entity == 'wits_stream':
+            self.set_info("wits_stream", data)
+            self.client.persist("wits_stream")
+
     def get_data(self, slot_id: str) -> dict:
         value = self.client.get(slot_id)
         if value is None:

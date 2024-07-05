@@ -46,12 +46,16 @@ const initialState: IInitialCameras = {
   detectionImg3: "",
   coef_w_3: 0,
   coef_h_3: 0,
+  loadingImg: false,
 };
 
 export const cameraSlice = createSlice({
   name: "cameras",
   initialState,
   reducers: {
+    setloadingImg(state, action: PayloadAction<boolean>) {
+      state.loadingImg = action.payload;
+    },
     setDetectionProcess(state, action: PayloadAction<boolean>) {
       state.detectionProcess = action.payload;
     },

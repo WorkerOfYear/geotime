@@ -44,7 +44,6 @@ class WitsClient:
             if data:
                 wits_param = self.data_processing_from_wits(data, value_keys)
                 all_params.append(wits_param)
-
         tn.close()
 
         result = {}
@@ -61,7 +60,6 @@ class WitsClient:
         all_params = []
         while True:
             data = tn.read_until(b"!!").decode("utf-8")
-
             if len(all_params) > 3:
                 result = {}
                 for item in all_params:

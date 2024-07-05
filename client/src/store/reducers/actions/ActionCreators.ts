@@ -60,7 +60,7 @@ export const stopJob = (state: IJob | null) => async (dispatch: AppDispatch) => 
 
     if (response.status === 200) {
       console.log("Job stopped");
-      dispatch(jobSlice.actions.setJobState(false));
+      // dispatch(jobSlice.actions.setJobState(false));
     } else {
       console.log(`Job stopped status code: ${response.status}`);
     }

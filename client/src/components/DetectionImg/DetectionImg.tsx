@@ -12,6 +12,7 @@ import {
   getInitialDetectionById,
   getInitialProductIdByCameraId,
 } from "../../utils/camera";
+import { ClipLoader } from "react-spinners";
 
 interface Props {
   imgUrl: string;
@@ -25,6 +26,14 @@ const DetectionImg = ({ imgUrl, cameraId }: Props) => {
 
   const dispatch = useAppDispatch();
   const cameraReducer = useAppSelector((state) => state.cameraReducer);
+
+  useEffect(() => {
+    if (state === "loading") {
+      dispatch(cameraSlice.actions.setloadingImg(true));
+    } else {
+      dispatch(cameraSlice.actions.setloadingImg(false));
+    }
+  }, [state]);
 
   useEffect(() => {
     if (state !== "loaded") return;
@@ -60,13 +69,28 @@ const DetectionImg = ({ imgUrl, cameraId }: Props) => {
 
   return (
     <>
-      <Stage width={452} height={230}>
-        <Layer>
-          <Image width={452} height={230} image={image} />
-          <DetectionAreaSpawner initialPoints={initialPoints} onPointsChange={onPointsChange} />
-        </Layer>
-        <Layer name="top-layer" />
-      </Stage>
+      {state === "loading" ? (
+        <div
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 452, height: 230 }}
+        >
+          <ClipLoader
+            color={"#605dec"}
+            loading={true}
+            size={50}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          />
+          <span>Ожидайте загрузки..</span>
+        </div>
+      ) : (
+        <Stage width={452} height={230}>
+          <Layer>
+            <Image width={452} height={230} image={image} />
+            <DetectionAreaSpawner initialPoints={initialPoints} onPointsChange={onPointsChange} />
+          </Layer>
+          <Layer name="top-layer" />
+        </Stage>
+      )}
     </>
   );
 };

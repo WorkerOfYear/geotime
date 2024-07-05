@@ -38,4 +38,5 @@ export interface IInitialCameras {
   detectionImg3: string;
   coef_w_3: number;
   coef_h_3: number;
+  loadingImg: boolean;
 }

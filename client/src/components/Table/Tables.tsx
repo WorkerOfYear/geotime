@@ -28,7 +28,7 @@ const Tables: React.FC<TablesProps> = ({ id, reports, cameraUrl, showStream, cla
         {showStream && (
           <div className={styles.table__video}>
             <Video errorText={`Видео с камеры №${id}`} cameraUrl={cameraUrl} />
-            <DetectionVideo errorText={`Видео с камеры №${id}`} cameraUrl={cameraUrl} />
+            <DetectionVideo errorText={`Видео с камеры №${id}`} cameraUrl={cameraUrl} showVideo={true} />
           </div>
         )}
         {isFetching && (

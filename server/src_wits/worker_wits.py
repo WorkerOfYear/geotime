@@ -13,4 +13,4 @@ if __name__ == '__main__':
     }
     wits_client = WitsClient()
     RedisManager().add_data('wits', 'add', data)
-    wits = wits_client.get_data('stream')
+    # wits = wits_client.get_data('stream')

@@ -26,16 +26,18 @@ import Stopwatch from "../components/ui/Stopwatch/Stopwatch";
 const ProductPage = () => {
   const [cameraUrlInput, setCameraUrlInput] = useState<string>("");
   const [showVideo, setShowVideo] = useState<boolean>(false);
+  const [showDetectinVideo, setShowDetectinVideo] = useState<boolean>(false);
   const [showTimer, setShowTimer] = useState<boolean>(false);
   const [enableSubmit, setEnableSubmit] = useState<boolean>(false);
   const [enableStartCalibration, setEnableStartCalibration] = useState<boolean>(false);
-
+  
   const { sieve_id: sieveId } = useParams();
 
   const dispatch = useAppDispatch();
   const cameraReducer = useAppSelector((state) => state.cameraReducer);
   const productObject = chooseCamera(sieveId, cameraReducer);
-
+  const loadingImg = useAppSelector(state => state.cameraReducer.loadingImg)
+  
   const { factValue, sensity, cameraUrl, detection, setDetection } = useProductState(sieveId);
   const firstImageUrl = useProductFirstImg(sieveId);
 
@@ -115,6 +117,7 @@ const ProductPage = () => {
       })
     );
     setShowTimer(true);
+    setShowDetectinVideo(true)
   };
 
   const handleStopCalibration = () => {
@@ -125,6 +128,8 @@ const ProductPage = () => {
         setEnableSubmit(true);
       }
     });
+
+    setShowDetectinVideo(false)
   };
 
   return (
@@ -133,7 +138,7 @@ const ProductPage = () => {
       <div className="product__header">
         <div>
           <CalibrateButtons
-            disabledStart={cameraReducer.detectionProcess || !enableStartCalibration}
+            disabledStart={cameraReducer.detectionProcess || !enableStartCalibration || loadingImg}
             disabledStop={!cameraReducer.detectionProcess}
             onStart={handleStartCalibration}
             onStop={handleStopCalibration}
@@ -151,7 +156,7 @@ const ProductPage = () => {
                 onChange={(e) => setCameraUrlInput(e.currentTarget.value)}
                 placeholder={"rtsp://host:port/path"}
               />
-              <button onClick={handleCameraSubmit} className="button button--border">
+              <button onClick={handleCameraSubmit} className="button button--border" disabled={loadingImg}>
                 Применить
               </button>
             </div>
@@ -172,7 +177,7 @@ const ProductPage = () => {
                 className={"product-video"}
                 errorText="Видео с детекцией"
                 cameraUrl={cameraUrl.value}
-                showVideo={showVideo}
+                showVideo={showDetectinVideo}
               />
             )}
           </div>

@@ -79,7 +79,7 @@ export const reportApi = createApi({
           ws.onerror = (err: Event) => console.error(err);
           ws.onclose = (message: CloseEvent) => {
             console.log("Ws closed");
-            dispatch(stopJob(null));
+            dispatch(jobSlice.actions.setJobState(false));
           };
           listener = (event: MessageEvent) => {
             const data = JSON.parse(event.data);
@@ -108,7 +108,7 @@ export const reportApi = createApi({
           ws.onerror = (err: Event) => console.error(err);
           ws.onclose = (message: CloseEvent) => {
             console.log("Ws closed");
-            dispatch(stopJob(null));
+            dispatch(jobSlice.actions.setJobState(false));
           };
 
           listener = (event: MessageEvent) => {

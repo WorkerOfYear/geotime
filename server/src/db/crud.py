@@ -7,7 +7,6 @@ from src.db.models import Report
 
 
 def create_report(session, report: dict, job_id: str):
-    logger.debug(report)
     if report:
         db_report = Report(
             job_id=job_id,

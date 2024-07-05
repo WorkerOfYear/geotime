@@ -11,10 +11,11 @@ from PIL import Image
 import os
 
 from cv2 import cuda
-from celery import Celery, group
+from celery import Celery, group, current_task
 from celery.utils.log import get_task_logger
 from celery.contrib.abortable import AbortableTask
 from loguru import logger
+from clients.wits_manager import WitsClient
 
 celery = Celery(
     "tasks", broker=f"redis://localhost:6379", backend=f"redis://localhost:6379"
@@ -457,6 +458,36 @@ class RabbitQueue:
 
 
 @celery.task(bind=True, base=AbortableTask)
+def worker_wits(self):
+    wits_client = WitsClient()
+    rabbit_queue = RabbitQueue()
+    settings = wits_client.get_connection()
+
+    all_params = []
+    while True:
+        if self.is_aborted():
+            return
+        status = RedisManager().get_data("wits_stream")
+
+        if status['status']:
+            data = settings["tn"].read_until(b"!!").decode("utf-8")
+            if len(all_params) > 3:
+                result = {}
+                for item in all_params:
+                    if item:
+                        result.update(item)
+                rabbit_queue.add_message_queue("wits", "wits", json.dumps(result))
+                logger.info(f"Wits data send queue - {result}")
+                all_params = []
+
+            if data:
+                wits_param = wits_client.data_processing_from_wits(data, settings["value_keys"])
+                all_params.append(wits_param)
+        else:
+            self.app.control.revoke(self.request.id, terminate=True)
+            return
+
+@celery.task(bind=True, base=AbortableTask)
 def consume_flow_of_frames(self, job_id: str, stream_url: str):
     job = RedisManager().get_data(job_id)
     camera = RedisManager().get_data(job['camera_id'])
@@ -581,6 +612,8 @@ def test_calibration(self, calibration: dict):
     camera['total_shlam_square'] = 0
     camera['id'] = calibration['camera_id']
 
+    logger.debug(camera)
+
     fps_counter = 0
     area_cm2_list = []
     v_liters = []
@@ -652,7 +685,7 @@ def test_calibration(self, calibration: dict):
                 else:
                     self.app.control.revoke(self.request.id, terminate=True)
                     RedisManager().add_data('camera', 'update', camera)
-                    print('Записали данные по колибровке', camera)
+                    logger.info('Записали данные по колибровке', camera)
                     return
 
         except Exception as e:

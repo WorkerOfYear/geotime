@@ -145,9 +145,9 @@ def process_stream(stream_url: str, ):
                         speeds.append(speed)
 
 
-                    frontend_frame = cv2.add(frame, mask)
+                    # frontend_frame = cv2.add(frame, mask)
 
-                    resolution = [1280, 720]
+                    resolution = [452, 230]  # 1280, 720
                     frame = cv2.resize(masked_frame, resolution)
                     _, buffer = cv2.imencode(".jpg", frame)
                     yield (
